@@ -1,20 +1,33 @@
-<?php include 'includes/header.php'; ?>
+<?php
+$page_title = 'Our gym | Besufkad Gym';
+include 'includes/header.php';
+?>
 
-<h2>About PowerPulse Gym</h2>
-<p>PowerPulse Gym is dedicated to promoting health, strength, and active lifestyles through top-class facilities and community programs.</p>
+<section class="split-panel">
+    <div>
+        <p class="eyebrow">More than a workout</p>
+        <h2>A local club for the long game.</h2>
+        <p>Besufkad Gym is here to make taking care of yourself feel approachable. We bring good equipment, supportive coaching and a friendly community together under one roof.</p>
+        <p>Progress looks different for everyone. Our job is to help you feel comfortable getting started, build a routine that fits your life and celebrate the small wins along the way.</p>
+        <a class="button button-dark" href="contact.php">Come say hello <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="split-image" role="img" aria-label="A bright, welcoming gym training floor"></div>
+</section>
 
-<br>
-<hr>
-<br>
-
-<h2>Student Information</h2>
-<div class="card">
-    <p><strong>Full Name:</strong> [Insert Your Full Name Here]</p>
-    <p><strong>ID Number:</strong> [Insert Your Student ID Here]</p>
-    <p><strong>Department:</strong> Computer Science</p>
-    <br>
-    <p><strong>Personal Statement:</strong></p>
-    <p>I am a passionate Computer Science student interested in full-stack web development and database management. I selected the Gym Club Membership System project to gain practical experience building an end-to-end web application that seamlessly connects user interaction, PHP business logic, and MySQL persistent data storage.</p>
+<div class="about-values">
+    <article class="about-value"><strong>People before PRs</strong><p>A friendly hello and thoughtful guidance matter as much as the equipment.</p></article>
+    <article class="about-value"><strong>Progress, your way</strong><p>Start where you are. Our classes and coaching are designed for different experience levels.</p></article>
+    <article class="about-value"><strong>Part of the neighborhood</strong><p>With four branches, making time for movement can fit around your day.</p></article>
 </div>
+
+<section class="section" style="padding: 70px 0 0;">
+    <div class="section-heading"><p class="eyebrow">Meet us nearby</p><h2>Four places to get moving.</h2><p>Choose the branch that fits your routine. For directions or a first visit, send our team a note.</p></div>
+    <div class="card-grid">
+        <article class="card"><span class="feature-icon" aria-hidden="true">⌖</span><h3 style="margin-top: 34px;">Bole Atlas</h3><p>Main Branch, Atlas Road</p></article>
+        <article class="card"><span class="feature-icon" aria-hidden="true">⌖</span><h3 style="margin-top: 34px;">Haya Hulet</h3><p>Next to Mazoria</p></article>
+        <article class="card"><span class="feature-icon" aria-hidden="true">⌖</span><h3 style="margin-top: 34px;">Semit</h3><p>Safari Avenue</p></article>
+        <article class="card"><span class="feature-icon" aria-hidden="true">⌖</span><h3 style="margin-top: 34px;">Bisrate Gebreal</h3><p>Old Airport Road</p></article>
+    </div>
+</section>
 
 <?php include 'includes/footer.php'; ?>

@@ -3,9 +3,17 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
 // Switch language if requested
 if (isset($_GET['lang'])) {
-    $_SESSION['lang'] = $_GET['lang'];
+    $requested_lang = $_GET['lang'];
+    if (in_array($requested_lang, ['en', 'am'], true)) {
+        $_SESSION['lang'] = $requested_lang;
+    }
 }
 
 $current_lang = $_SESSION['lang'] ?? 'en';

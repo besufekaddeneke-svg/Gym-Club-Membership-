@@ -1,76 +1,70 @@
-<?php 
+<?php
 require_once 'config/db.php';
-include 'includes/header.php'; 
-
+require_once 'includes/lang.php';
+$page_title = 'Visit & contact | Besufkad Gym';
 $msg = '';
 $msg_class = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $message = trim($_POST['message'] ?? '');
+    $name_value = $_POST['name'] ?? '';
+    $email_value = $_POST['email'] ?? '';
+    $message_value = $_POST['message'] ?? '';
+    $name = is_string($name_value) ? trim($name_value) : '';
+    $email = is_string($email_value) ? trim($email_value) : '';
+    $message = is_string($message_value) ? trim($message_value) : '';
+    $posted_token = $_POST['csrf_token'] ?? '';
 
-    if (!empty($name) && !empty($email) && !empty($message) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $stmt = $conn->prepare("INSERT INTO messages (name, email, message) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $name, $email, $message);
+    if (!is_string($posted_token) || !hash_equals($csrf_token, $posted_token)) {
+        $msg = 'Your form session expired. Please refresh and try again.';
+        $msg_class = 'alert-danger';
+    } elseif ($name === '' || $email === '' || $message === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $msg = 'Please enter your name, a valid email and a message.';
+        $msg_class = 'alert-danger';
+    } else {
+        $stmt = $conn->prepare('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)');
+        $stmt->bind_param('sss', $name, $email, $message);
         if ($stmt->execute()) {
-            $msg = "Thank you! Your message has been stored.";
-            $msg_class = "alert-success";
+            $msg = 'Thanks for reaching out. Your enquiry has been saved.';
+            $msg_class = 'alert-success';
         } else {
-            $msg = "Error submitting message.";
-            $msg_class = "alert-danger";
+            $msg = 'We could not save your message. Please try again.';
+            $msg_class = 'alert-danger';
         }
         $stmt->close();
-    } else {
-        $msg = "Please fill in all fields with a valid email.";
-        $msg_class = "alert-danger";
     }
 }
+include 'includes/header.php';
 ?>
 
-<h2>Our Branches</h2>
-<p>Visit Besufkad Gym at any of our premium locations across the city.</p>
+<section class="page-intro">
+    <p class="eyebrow">Drop by or drop us a line</p>
+    <h2>We’d love to meet you.</h2>
+    <p>Want to tour the gym, ask about a membership or find the right first class? Send us a note and tell us how we can help.</p>
+</section>
 
-<div class="card-grid" style="margin-bottom: 3rem;">
-    <div class="card" style="text-align: center;">
-        <h3 style="font-size: 1.2rem;">📍 Bole Atlas</h3>
-        <p style="margin: 0; font-size: 0.9rem;">Main Branch, Atlas Road</p>
+<div class="contact-layout">
+    <div class="contact-info">
+        <article class="contact-info-card"><strong>Bole Atlas</strong><p>Main branch · Atlas Road</p></article>
+        <article class="contact-info-card"><strong>Haya Hulet</strong><p>Next to Mazoria</p></article>
+        <article class="contact-info-card"><strong>Semit</strong><p>Safari Avenue</p></article>
+        <article class="contact-info-card"><strong>Bisrate Gebreal</strong><p>Old Airport Road</p></article>
+        <div class="schedule-note">Not sure which branch is right for you? Leave a message and mention your neighborhood. We’ll help you find us.</div>
     </div>
-    <div class="card" style="text-align: center;">
-        <h3 style="font-size: 1.2rem;">📍 Haya Hulet</h3>
-        <p style="margin: 0; font-size: 0.9rem;">Next to Mazoria</p>
-    </div>
-    <div class="card" style="text-align: center;">
-        <h3 style="font-size: 1.2rem;">📍 Semit</h3>
-        <p style="margin: 0; font-size: 0.9rem;">Safari Avenue</p>
-    </div>
-    <div class="card" style="text-align: center;">
-        <h3 style="font-size: 1.2rem;">📍 Bisrate Gebreal</h3>
-        <p style="margin: 0; font-size: 0.9rem;">Old Airport Road</p>
-    </div>
-</div>
 
-<h2>Contact Us</h2>
-<?php if ($msg): ?>
-    <div class="alert <?= $msg_class ?>"><?= $msg ?></div>
-<?php endif; ?>
-
-<div class="form-card">
-    <form action="contact.php" method="POST">
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" name="name" required>
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label>Message</label>
-            <textarea name="message" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn">Send Message</button>
-    </form>
+    <div>
+        <?php if ($msg): ?>
+            <div class="alert <?= htmlspecialchars($msg_class, ENT_QUOTES, 'UTF-8') ?>" role="status"><?= htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') ?></div>
+        <?php endif; ?>
+        <form class="form-card" action="contact.php" method="POST">
+            <h3>Send us a message</h3>
+            <p class="form-intro">Your message will be recorded so the club can review your enquiry.</p>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+            <div class="form-group"><label for="name">Your name</label><input id="name" type="text" name="name" autocomplete="name" maxlength="100" required></div>
+            <div class="form-group"><label for="email">Email address</label><input id="email" type="email" name="email" autocomplete="email" maxlength="100" required></div>
+            <div class="form-group"><label for="message">How can we help?</label><textarea id="message" name="message" rows="5" maxlength="2000" required></textarea></div>
+            <button type="submit" class="button button-full">Send message <span aria-hidden="true">↗</span></button>
+        </form>
+    </div>
 </div>
 
 <?php include 'includes/footer.php'; ?>

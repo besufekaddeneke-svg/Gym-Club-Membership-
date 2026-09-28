@@ -1,37 +1,61 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Theme Toggle Logic
     const themeToggle = document.getElementById("themeToggle");
-    const body = document.body;
+    const menuToggle = document.getElementById("menuToggle");
+    const primaryNav = document.getElementById("primaryNav");
 
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-        body.classList.add("dark-mode");
+    try {
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark-mode");
+        }
+    } catch (error) {
+        // Keep the current theme if browser storage is unavailable.
     }
 
     if (themeToggle) {
         themeToggle.addEventListener("click", function () {
-            body.classList.toggle("dark-mode");
-            // Save preference
-            let theme = body.classList.contains("dark-mode") ? "dark" : "light";
-            localStorage.setItem("theme", theme);
+            document.body.classList.toggle("dark-mode");
+            try {
+                localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+            } catch (error) {
+                // Theme still changes for this page view.
+            }
         });
     }
 
-    // Client-side form validation for registration
+    if (menuToggle && primaryNav) {
+        menuToggle.addEventListener("click", function () {
+            const isOpen = primaryNav.classList.toggle("is-open");
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+            menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+        });
+
+        primaryNav.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", function () {
+                primaryNav.classList.remove("is-open");
+                menuToggle.setAttribute("aria-expanded", "false");
+                menuToggle.setAttribute("aria-label", "Open navigation");
+            });
+        });
+    }
+
     const regForm = document.getElementById("registerForm");
     if (regForm) {
-        regForm.addEventListener("submit", function (e) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm_password").value;
+        const passwordInput = document.getElementById("password");
+        const confirmInput = document.getElementById("confirm_password");
+        const validatePasswords = function () {
+            confirmInput.setCustomValidity(confirmInput.value && confirmInput.value !== passwordInput.value ? "Passwords do not match." : "");
+        };
 
-            if (password.length < 6) {
-                alert("Password must be at least 6 characters long.");
-                e.preventDefault();
-            } else if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                e.preventDefault();
+        passwordInput.addEventListener("input", validatePasswords);
+        confirmInput.addEventListener("input", validatePasswords);
+        regForm.addEventListener("submit", function (event) {
+            validatePasswords();
+            if (passwordInput.value.length < 8) {
+                passwordInput.setCustomValidity("Use at least 8 characters.");
+            } else {
+                passwordInput.setCustomValidity("");
             }
+            if (!regForm.reportValidity()) event.preventDefault();
         });
     }
 });
