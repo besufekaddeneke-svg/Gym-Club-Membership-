@@ -1,4 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Theme Toggle Logic
+    const themeToggle = document.getElementById("themeToggle");
+    const body = document.body;
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        body.classList.add("dark-mode");
+    }
+
+    if (themeToggle) {
+        themeToggle.addEventListener("click", function () {
+            body.classList.toggle("dark-mode");
+            // Save preference
+            let theme = body.classList.contains("dark-mode") ? "dark" : "light";
+            localStorage.setItem("theme", theme);
+        });
+    }
+
     // Client-side form validation for registration
     const regForm = document.getElementById("registerForm");
     if (regForm) {
