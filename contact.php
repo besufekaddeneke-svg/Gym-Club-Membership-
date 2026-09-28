@@ -28,12 +28,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<h2>Our Branches</h2>
+<p>Visit Besufkad Gym at any of our premium locations across the city.</p>
+
+<div class="card-grid" style="margin-bottom: 3rem;">
+    <div class="card" style="text-align: center;">
+        <h3 style="font-size: 1.2rem;">📍 Bole Atlas</h3>
+        <p style="margin: 0; font-size: 0.9rem;">Main Branch, Atlas Road</p>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="font-size: 1.2rem;">📍 Haya Hulet</h3>
+        <p style="margin: 0; font-size: 0.9rem;">Next to Mazoria</p>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="font-size: 1.2rem;">📍 Semit</h3>
+        <p style="margin: 0; font-size: 0.9rem;">Safari Avenue</p>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="font-size: 1.2rem;">📍 Bisrate Gebreal</h3>
+        <p style="margin: 0; font-size: 0.9rem;">Old Airport Road</p>
+    </div>
+</div>
+
 <h2>Contact Us</h2>
 <?php if ($msg): ?>
     <div class="alert <?= $msg_class ?>"><?= $msg ?></div>
 <?php endif; ?>
 
-<div class="card">
+<div class="form-card">
     <form action="contact.php" method="POST">
         <div class="form-group">
             <label>Name</label>
@@ -45,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-group">
             <label>Message</label>
-            <textarea name="message" rows="4" required></textarea>
+            <textarea name="message" rows="5" required></textarea>
         </div>
         <button type="submit" class="btn">Send Message</button>
     </form>
