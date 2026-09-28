@@ -1,6 +1,10 @@
 CREATE DATABASE IF NOT EXISTS gym_db;
 USE gym_db;
 
+-- Development account used by config/db.php. Run this file as a MySQL admin.
+CREATE USER IF NOT EXISTS 'gym_user'@'localhost' IDENTIFIED BY 'gym_password';
+GRANT ALL PRIVILEGES ON gym_db.* TO 'gym_user'@'localhost';
+
 -- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,6 +29,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     class_name VARCHAR(50) NOT NULL,
+    branch VARCHAR(100) NOT NULL,
     booking_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
