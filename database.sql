@@ -59,13 +59,23 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert Sample Plans
+-- Convert the original sample plans into locally priced weekly-access packages.
+UPDATE plans SET name = '3 Days / Week' WHERE name = 'Basic Fitness';
+UPDATE plans SET name = '4 Days / Week' WHERE name = 'Pro Athlete';
+UPDATE plans SET name = 'Every Day Access' WHERE name = 'VIP Elite';
+UPDATE plans SET price = 1500, duration = 'month', description = 'Gym access up to three days each week. A steady, flexible routine for building consistency.' WHERE name = '3 Days / Week';
+UPDATE plans SET price = 2000, duration = 'month', description = 'Gym access up to four days each week, with room to mix strength and cardio.' WHERE name = '4 Days / Week';
+UPDATE plans SET price = 2500, duration = 'month', description = 'Unlimited gym access every day of the week. Train whenever it fits your routine.' WHERE name = 'Every Day Access';
+
+DELETE older FROM plans older
+JOIN plans newer ON older.name = newer.name AND older.id > newer.id;
+
 INSERT INTO plans (name, price, duration, description)
-SELECT 'Basic Fitness', 29.99, '1 Month', 'Access to gym equipment and locker rooms.'
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'Basic Fitness')
+SELECT '3 Days / Week', 1500, 'month', 'Gym access up to three days each week. A steady, flexible routine for building consistency.'
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = '3 Days / Week')
 UNION ALL
-SELECT 'Pro Athlete', 59.99, '1 Month', 'Access to equipment, all group classes, and sauna.'
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'Pro Athlete')
+SELECT '4 Days / Week', 2000, 'month', 'Gym access up to four days each week, with room to mix strength and cardio.'
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = '4 Days / Week')
 UNION ALL
-SELECT 'VIP Elite', 499.99, '1 Year', 'All-inclusive access, personal trainer sessions, and custom meal plans.'
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'VIP Elite');
+SELECT 'Every Day Access', 2500, 'month', 'Unlimited gym access every day of the week. Train whenever it fits your routine.'
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'Every Day Access');

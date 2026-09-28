@@ -4,6 +4,20 @@ require_once 'includes/lang.php';
 $page_title = 'Visit & contact | Besufkad Gym';
 $msg = '';
 $msg_class = '';
+$name = '';
+$email = '';
+$selected_plan = null;
+$plan_id = filter_var($_GET['plan'] ?? null, FILTER_VALIDATE_INT);
+if ($plan_id) {
+    $plan_lookup = $conn->prepare('SELECT id, name, price, duration FROM plans WHERE id = ?');
+    $plan_lookup->bind_param('i', $plan_id);
+    $plan_lookup->execute();
+    $selected_plan = $plan_lookup->get_result()->fetch_assoc() ?: null;
+    $plan_lookup->close();
+}
+$message = $selected_plan
+    ? 'I am interested in the ' . $selected_plan['name'] . ' package. Please tell me how to get started.'
+    : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name_value = $_POST['name'] ?? '';
@@ -44,6 +58,9 @@ include 'includes/header.php';
 
 <div class="contact-layout">
     <div class="contact-info">
+        <?php if ($selected_plan): ?>
+            <article class="contact-info-card selected-package"><strong>Your selected package</strong><p><?= htmlspecialchars($selected_plan['name'], ENT_QUOTES, 'UTF-8') ?> · ETB <?= number_format((float) $selected_plan['price'], 0) ?> / <?= htmlspecialchars($selected_plan['duration'], ENT_QUOTES, 'UTF-8') ?></p></article>
+        <?php endif; ?>
         <article class="contact-info-card"><strong>Bole Atlas</strong><p>Main branch · Atlas Road</p></article>
         <article class="contact-info-card"><strong>Haya Hulet</strong><p>Next to Mazoria</p></article>
         <article class="contact-info-card"><strong>Semit</strong><p>Safari Avenue</p></article>
@@ -59,9 +76,9 @@ include 'includes/header.php';
             <h3>Send us a message</h3>
             <p class="form-intro">Your message will be recorded so the club can review your enquiry.</p>
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
-            <div class="form-group"><label for="name">Your name</label><input id="name" type="text" name="name" autocomplete="name" maxlength="100" required></div>
-            <div class="form-group"><label for="email">Email address</label><input id="email" type="email" name="email" autocomplete="email" maxlength="100" required></div>
-            <div class="form-group"><label for="message">How can we help?</label><textarea id="message" name="message" rows="5" maxlength="2000" required></textarea></div>
+            <div class="form-group"><label for="name">Your name</label><input id="name" type="text" name="name" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" autocomplete="name" maxlength="100" required></div>
+            <div class="form-group"><label for="email">Email address</label><input id="email" type="email" name="email" value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>" autocomplete="email" maxlength="100" required></div>
+            <div class="form-group"><label for="message">How can we help?</label><textarea id="message" name="message" rows="5" maxlength="2000" required><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></textarea></div>
             <button type="submit" class="button button-full">Send message <span aria-hidden="true">↗</span></button>
         </form>
     </div>

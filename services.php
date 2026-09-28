@@ -8,7 +8,7 @@ include 'includes/header.php';
 <section class="page-intro">
     <p class="eyebrow">Find your fit</p>
     <h2>Memberships built around you.</h2>
-    <p>Compare local options and get in touch when you’re ready to join. Create a member account to book a class at the branch that works for you.</p>
+    <p>Choose how often you want to train. Prices are in Ethiopian birr (ETB) and billed monthly; ask us about joining or create a member account to book classes.</p>
 </section>
 
 <?php if ($result && $result->num_rows > 0): ?>
@@ -20,10 +20,10 @@ include 'includes/header.php';
                     <h3><?= htmlspecialchars($plan['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                     <?php if ($plan_index === 1): ?><span class="pill">Popular</span><?php endif; ?>
                 </div>
-                <div class="plan-price">$<?= number_format((float) $plan['price'], 2) ?><span> / <?= htmlspecialchars($plan['duration'], ENT_QUOTES, 'UTF-8') ?></span></div>
+                <div class="plan-price"><span class="currency">ETB</span> <?= number_format((float) $plan['price'], 0) ?><span> / <?= htmlspecialchars($plan['duration'], ENT_QUOTES, 'UTF-8') ?></span></div>
                 <p><?= htmlspecialchars($plan['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
-                <a class="button <?= $plan_index === 1 ? '' : 'button-outline' ?>" href="<?= isset($_SESSION['user_id']) ? 'dashboard.php#book-class' : 'register.php' ?>">
-                    <?= isset($_SESSION['user_id']) ? 'Book a class' : 'Create a member account' ?> <span aria-hidden="true">→</span>
+                <a class="button <?= $plan_index === 1 ? '' : 'button-outline' ?>" href="contact.php?plan=<?= (int) $plan['id'] ?>">
+                    Ask about this package <span aria-hidden="true">→</span>
                 </a>
             </article>
             <?php $plan_index++; ?>

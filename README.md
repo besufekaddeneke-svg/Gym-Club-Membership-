@@ -30,3 +30,10 @@ PowerPulse Gym Club Membership System
 
 ## Try the member experience
 Register a member account from the website, then sign in to book and cancel classes. The SQL setup does not insert a demo user.
+
+## Membership packages
+- **3 Days / Week** — ETB 1,500 per month
+- **4 Days / Week** — ETB 2,000 per month
+- **Every Day Access** — ETB 2,500 per month
+
+Package amounts are sample rates and can be changed in `database.sql` before importing the setup.
