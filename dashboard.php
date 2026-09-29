@@ -9,11 +9,10 @@ if (!isset($_SESSION['user_id'])) {
 
 $page_title = 'My bookings | Besufkad Gym';
 $user_id = (int) $_SESSION['user_id'];
-$classes = [
-    'Yoga & Meditation',
-    'HIIT Body Blast',
-    'Heavy Powerlifting',
-    'Spinning Cardio',
+$plans = [
+    '3 Days / Week',
+    '4 Days / Week',
+    'Every Day Access',
 ];
 $branches = ['Bole Atlas', 'Haya Hulet', 'Semit', 'Bisrate Gebreal'];
 $today = new DateTimeImmutable('today');
@@ -49,35 +48,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
         }
     } elseif (($_POST['action'] ?? '') === 'book') {
-        $class_name = $_POST['class_name'] ?? '';
+        $plan_name = $_POST['plan_name'] ?? '';
         $branch = $_POST['branch'] ?? '';
         $booking_date = $_POST['booking_date'] ?? '';
         $date = is_string($booking_date) ? DateTimeImmutable::createFromFormat('!Y-m-d', $booking_date) : false;
         $date_errors = DateTimeImmutable::getLastErrors();
         $valid_date = $date && ($date_errors === false || ($date_errors['warning_count'] === 0 && $date_errors['error_count'] === 0)) && $date->format('Y-m-d') === $booking_date;
-        if (!in_array($class_name, $classes, true) || !in_array($branch, $branches, true)) {
-            $message = 'Choose a class and branch from the available options.';
+        if (!in_array($plan_name, $plans, true) || !in_array($branch, $branches, true)) {
+            $message = 'Choose a membership plan and branch from the available options.';
         } elseif (!$valid_date || $date < $today || $date > $latest_booking) {
             $message = 'Choose a date from today through the next six months.';
         } else {
             $check = $conn->prepare('SELECT id FROM bookings WHERE user_id = ? AND class_name = ? AND booking_date = ? LIMIT 1');
-            $check->bind_param('iss', $user_id, $class_name, $booking_date);
+            $check->bind_param('iss', $user_id, $plan_name, $booking_date);
             $check->execute();
             $already_booked = $check->get_result()->num_rows > 0;
             $check->close();
 
             if ($already_booked) {
-                $message = 'You already have this class booked on that date.';
+                $message = 'You already have this plan selected for that date.';
             } else {
                 $stmt = $conn->prepare('INSERT INTO bookings (user_id, class_name, branch, booking_date) VALUES (?, ?, ?, ?)');
-                $stmt->bind_param('isss', $user_id, $class_name, $branch, $booking_date);
+                $stmt->bind_param('isss', $user_id, $plan_name, $branch, $booking_date);
                 if ($stmt->execute()) {
-                    $_SESSION['dashboard_notice'] = ['message' => 'You’re booked! We’ll see you at ' . $branch . '.', 'class' => 'alert-success'];
+                    $_SESSION['dashboard_notice'] = ['message' => 'Your plan is set! We’ll see you at ' . $branch . '.', 'class' => 'alert-success'];
                     $stmt->close();
                     header('Location: dashboard.php');
                     exit;
                 }
-                $message = 'Your booking could not be saved. Please try again.';
+                $message = 'Your membership plan could not be saved. Please try again.';
                 $stmt->close();
             }
         }
@@ -109,22 +108,22 @@ include 'includes/header.php';
 <div class="dashboard-grid">
     <section class="form-card" id="book-class">
         <p class="eyebrow">Make it happen</p>
-        <h3>Book a class</h3>
-        <p class="form-intro">Pick a class, location and date. You can cancel anytime before the class day.</p>
+        <h3>Choose your plan</h3>
+        <p class="form-intro">Pick your membership plan, choose where you want to train, and set your preferred date.</p>
         <form action="dashboard.php#book-class" method="POST">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="action" value="book">
             <div class="form-group">
-                <label for="class_name">Choose a class</label>
-                <select id="class_name" name="class_name" required>
-                    <option value="">Select a class</option>
-                    <?php foreach ($classes as $class): ?>
-                        <option value="<?= htmlspecialchars($class, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($class, ENT_QUOTES, 'UTF-8') ?></option>
+                <label for="plan_name">Choose a plan</label>
+                <select id="plan_name" name="plan_name" required>
+                    <option value="">Select a plan</option>
+                    <?php foreach ($plans as $plan): ?>
+                        <option value="<?= htmlspecialchars($plan, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($plan, ENT_QUOTES, 'UTF-8') ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
-                <label for="branch">Choose a branch</label>
+                <label for="branch">Choose a workplace</label>
                 <select id="branch" name="branch" required>
                     <option value="">Select a location</option>
                     <?php foreach ($branches as $branch_option): ?>
@@ -137,13 +136,13 @@ include 'includes/header.php';
                 <input id="booking_date" type="date" name="booking_date" min="<?= $today_value ?>" max="<?= $latest_value ?>" required>
                 <p class="form-hint">Bookings are available up to six months ahead.</p>
             </div>
-            <button type="submit" class="button button-full">Reserve my spot <span aria-hidden="true">→</span></button>
+            <button type="submit" class="button button-full">Save my plan <span aria-hidden="true">→</span></button>
         </form>
     </section>
 
     <section>
         <p class="eyebrow">On your calendar</p>
-        <h3 style="margin: 0 0 18px;">Upcoming classes</h3>
+        <h3 style="margin: 0 0 18px;">Upcoming plans</h3>
         <?php if ($bookings->num_rows > 0): ?>
             <div class="booking-list">
                 <?php while ($booking = $bookings->fetch_assoc()): ?>
@@ -153,7 +152,7 @@ include 'includes/header.php';
                             <p><?= htmlspecialchars(date('D, M j, Y', strtotime($booking['booking_date'])), ENT_QUOTES, 'UTF-8') ?></p>
                             <p><?= htmlspecialchars($booking['branch'], ENT_QUOTES, 'UTF-8') ?></p>
                         </div>
-                        <form action="dashboard.php" method="POST" onsubmit="return confirm('Cancel this class reservation?');">
+                        <form action="dashboard.php" method="POST" onsubmit="return confirm('Cancel this plan?');">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
                             <input type="hidden" name="action" value="cancel">
                             <input type="hidden" name="booking_id" value="<?= (int) $booking['id'] ?>">
@@ -165,9 +164,9 @@ include 'includes/header.php';
         <?php else: ?>
             <div class="card booking-empty">
                 <span class="feature-icon" aria-hidden="true">◎</span>
-                <h3 style="margin-top: 40px;">Your calendar is open.</h3>
-                <p>Book your first class and it’ll show up right here.</p>
-                <a class="text-link" href="#book-class">Find a class <span aria-hidden="true">↓</span></a>
+                <h3 style="margin-top: 40px;">Your plan list is empty.</h3>
+                <p>Choose a membership plan and it’ll show up here.</p>
+                <a class="text-link" href="#book-class">Pick a plan <span aria-hidden="true">↓</span></a>
             </div>
         <?php endif; ?>
     </section>
