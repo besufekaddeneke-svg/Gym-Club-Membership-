@@ -25,13 +25,19 @@ CREATE TABLE IF NOT EXISTS plans (
     description TEXT
 );
 
--- 3. Class Bookings Table (Core Project Functionality)
+-- 3. Membership Bookings Table (Core Project Functionality)
 CREATE TABLE IF NOT EXISTS bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    class_name VARCHAR(50) NOT NULL,
+    class_name VARCHAR(100) NOT NULL,
     branch VARCHAR(100) NOT NULL,
     booking_date DATE NOT NULL,
+    end_date DATE NULL,
+    exercise_type VARCHAR(50) NOT NULL DEFAULT 'General Fitness',
+    months_paid INT NOT NULL DEFAULT 1,
+    total_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    payment_method VARCHAR(50) NOT NULL DEFAULT 'Chapa',
+    payment_status VARCHAR(20) NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -59,23 +65,23 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Convert the original sample plans into locally priced weekly-access packages.
-UPDATE plans SET name = '3 Days / Week' WHERE name = 'Basic Fitness';
+-- Convert the original sample plans into locally priced membership packages.
+UPDATE plans SET name = '2 Days / Week' WHERE name = 'Basic Fitness';
 UPDATE plans SET name = '4 Days / Week' WHERE name = 'Pro Athlete';
-UPDATE plans SET name = 'Every Day Access' WHERE name = 'VIP Elite';
-UPDATE plans SET price = 1500, duration = 'month', description = 'Gym access up to three days each week. A steady, flexible routine for building consistency.' WHERE name = '3 Days / Week';
-UPDATE plans SET price = 2000, duration = 'month', description = 'Gym access up to four days each week, with room to mix strength and cardio.' WHERE name = '4 Days / Week';
-UPDATE plans SET price = 2500, duration = 'month', description = 'Unlimited gym access every day of the week. Train whenever it fits your routine.' WHERE name = 'Every Day Access';
+UPDATE plans SET name = 'Whole Week' WHERE name = 'VIP Elite';
+UPDATE plans SET price = 2000, duration = 'month', description = 'Access to the gym for two days each week. Great for building a consistent routine without overcommitting.' WHERE name = '2 Days / Week';
+UPDATE plans SET price = 3500, duration = 'month', description = 'Four training days each week to balance strength, mobility and cardio with room to progress.' WHERE name = '4 Days / Week';
+UPDATE plans SET price = 5000, duration = 'month', description = 'Seven-day access for members who want a full weekly routine and maximum flexibility.' WHERE name = 'Whole Week';
 
 DELETE older FROM plans older
 JOIN plans newer ON older.name = newer.name AND older.id > newer.id;
 
 INSERT INTO plans (name, price, duration, description)
-SELECT '3 Days / Week', 1500, 'month', 'Gym access up to three days each week. A steady, flexible routine for building consistency.'
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = '3 Days / Week')
+SELECT '2 Days / Week', 2000, 'month', 'Access to the gym for two days each week. Great for building a consistent routine without overcommitting.'
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = '2 Days / Week')
 UNION ALL
-SELECT '4 Days / Week', 2000, 'month', 'Gym access up to four days each week, with room to mix strength and cardio.'
+SELECT '4 Days / Week', 3500, 'month', 'Four training days each week to balance strength, mobility and cardio with room to progress.'
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = '4 Days / Week')
 UNION ALL
-SELECT 'Every Day Access', 2500, 'month', 'Unlimited gym access every day of the week. Train whenever it fits your routine.'
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'Every Day Access');
+SELECT 'Whole Week', 5000, 'month', 'Seven-day access for members who want a full weekly routine and maximum flexibility.'
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'Whole Week');
