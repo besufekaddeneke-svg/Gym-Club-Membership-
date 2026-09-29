@@ -40,10 +40,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const noticeDialog = document.getElementById("noticeDialog");
     if (noticeDialog) {
-        if (typeof noticeDialog.showModal === "function") {
-            noticeDialog.showModal();
-        } else {
-            noticeDialog.setAttribute("open", "");
+        const openNoticeDialog = function () {
+            if (typeof noticeDialog.showModal === "function") {
+                if (!noticeDialog.open) noticeDialog.showModal();
+            } else {
+                noticeDialog.setAttribute("open", "");
+            }
+        };
+
+        if (noticeDialog.dataset.autoOpen === "true") {
+            openNoticeDialog();
         }
 
         noticeDialog.querySelectorAll("[data-dialog-close]").forEach(function (button) {
@@ -58,6 +64,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 noticeDialog.close();
             }
         });
+
+        const paymentMethodSelect = document.getElementById("payment_method");
+        const paymentOptions = JSON.parse(noticeDialog.dataset.paymentOptions || "{}");
+        if (paymentMethodSelect) {
+            paymentMethodSelect.addEventListener("change", function () {
+                const method = paymentMethodSelect.value;
+                const details = paymentOptions[method];
+                if (!details) return;
+
+                document.getElementById("noticeDialogIcon").textContent = "↗";
+                document.getElementById("noticeDialogEyebrow").textContent = "Payment destination";
+                document.getElementById("noticeDialogTitle").textContent = "Pay with " + method;
+                document.getElementById("noticeDialogDescription").textContent = "Transfer to the account below. Your plan-specific payment code will appear after you save your membership plan.";
+                document.getElementById("dialogAccountLabel").textContent = details.account_label;
+                document.getElementById("dialogAccountNumber").textContent = details.account_number;
+                document.getElementById("dialogAccountPanel").hidden = false;
+                document.getElementById("dialogReferencePanel").hidden = true;
+                document.getElementById("dialogPaymentSummary").hidden = true;
+                noticeDialog.dataset.autoOpen = "false";
+                openNoticeDialog();
+            });
+        }
 
         const copyReferenceButton = document.getElementById("copyReferenceButton");
         const paymentReferenceValue = document.getElementById("paymentReferenceValue");

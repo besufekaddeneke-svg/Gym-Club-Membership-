@@ -15,14 +15,14 @@ include 'includes/header.php';
     <div class="card-grid">
         <?php $plan_index = 0; ?>
         <?php while ($plan = $result->fetch_assoc()): ?>
-            <article class="card plan-card <?= $plan_index === 1 ? 'featured' : '' ?>">
+            <article class="card plan-card">
                 <div class="plan-top">
                     <h3><?= htmlspecialchars($plan['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                     <?php if ($plan_index === 1): ?><span class="pill">Popular</span><?php endif; ?>
                 </div>
                 <div class="plan-price"><span class="currency">ETB</span> <?= number_format((float) $plan['price'], 0) ?><span> / <?= htmlspecialchars($plan['duration'], ENT_QUOTES, 'UTF-8') ?></span></div>
                 <p><?= htmlspecialchars($plan['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
-                <a class="button <?= $plan_index === 1 ? '' : 'button-outline' ?>" href="contact.php?plan=<?= (int) $plan['id'] ?>">
+                <a class="button button-outline" href="contact.php?plan=<?= (int) $plan['id'] ?>">
                     Ask about this package <span aria-hidden="true">→</span>
                 </a>
             </article>
@@ -38,10 +38,17 @@ include 'includes/header.php';
         <div>
             <p class="eyebrow">Payment options</p>
             <h2>Pay securely, then send your receipt.</h2>
-            <p>We accept Chapa, Telebirr, and CBE Birr. Contact the gym before transferring to get the current verified account name, account number, and shortcode. After you save a plan, it receives its own payment reference; include it in the transfer note if supported and send your receipt to the admin. Your membership stays pending until payment is verified.</p>
-            <p><strong>Never transfer to account details from an unverified source.</strong></p>
+            <p>After saving a plan, a popup will show the account for your selected payment method and a unique payment code. Include the code in your transfer note if supported, then send the receipt to the admin. Your membership stays pending until payment is verified.</p>
+            <ul class="payment-account-list">
+                <li><strong>Telebirr:</strong> 0911223344</li>
+                <li><strong>CBE Account:</strong> 1000123456789</li>
+                <li><strong>CBE Birr:</strong> 0911223344</li>
+                <li><strong>Awash Bank:</strong> 456541321</li>
+                <li><strong>Abyssinia Bank:</strong> 1023488</li>
+            </ul>
+            <p>After transferring, enter the transaction code shown on your receipt in your member dashboard so the admin can verify it.</p>
         </div>
-        <a class="button" href="contact.php">Request payment details <span aria-hidden="true">↗</span></a>
+        <a class="button" href="dashboard.php#book-class">Choose a plan <span aria-hidden="true">↗</span></a>
     </div>
 </section>
 

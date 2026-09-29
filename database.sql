@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     payment_method VARCHAR(50) NOT NULL DEFAULT 'Chapa',
     payment_status VARCHAR(20) NOT NULL DEFAULT 'pending',
     payment_reference CHAR(20) NULL,
+    payment_transaction_code VARCHAR(100) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_bookings_payment_reference (payment_reference),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -84,6 +85,20 @@ SET @payment_reference_index_migration = IF(
 PREPARE payment_reference_index_stmt FROM @payment_reference_index_migration;
 EXECUTE payment_reference_index_stmt;
 DEALLOCATE PREPARE payment_reference_index_stmt;
+
+-- Store the transaction code supplied by the member from their payment receipt.
+SET @payment_transaction_code_column_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'payment_transaction_code'
+);
+SET @payment_transaction_code_migration = IF(
+    @payment_transaction_code_column_exists = 0,
+    'ALTER TABLE bookings ADD COLUMN payment_transaction_code VARCHAR(100) NULL AFTER payment_reference',
+    'SELECT 1'
+);
+PREPARE payment_transaction_code_stmt FROM @payment_transaction_code_migration;
+EXECUTE payment_transaction_code_stmt;
+DEALLOCATE PREPARE payment_transaction_code_stmt;
 
 -- 4. Contact Messages Table
 CREATE TABLE IF NOT EXISTS messages (
