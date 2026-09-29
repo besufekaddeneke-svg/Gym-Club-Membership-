@@ -1,84 +1,76 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Besufkad Gym Membership System — Assignment Report</title>
-<style>
-@page { size: A4; margin: 9mm 11mm; }
-* { box-sizing: border-box; }
-body { margin: 0; color: #17221b; font: 8.5pt/1.28 Arial, sans-serif; }
-h1 { margin: 0 0 1mm; font-size: 22pt; }
-h2 { margin: 2.5mm 0 1.5mm; color: #314522; font-size: 11.5pt; }
-p { margin: 1mm 0; }
-.meta { color: #526056; font-size: 9pt; }
-.student { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 7mm; margin: 2mm 0; padding: 2mm; border: 1px solid #dce4d7; border-radius: 3mm; background: #f8faf5; }
-.student p { margin: 0; }
-.pending { color: #8a4d00; font-weight: bold; }
-.features { columns: 2; column-gap: 8mm; margin: 1mm 0; padding-left: 4mm; }
-.features li { break-inside: avoid; margin: 0 0 1mm; }
-.erd { display: block; width: 100%; height: 49mm; margin: 1mm auto; object-fit: contain; }
-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
-th, td { padding: 1.5mm 2mm; border: 1px solid #dce4d7; text-align: left; vertical-align: top; }
-th { background: #edf4dc; }
-.page-break { page-break-before: always; break-before: page; }
-.gallery { width: 100%; border-collapse: separate; border-spacing: 2mm; }
-.gallery td { width: 50%; padding: 1.5mm; border: 1px solid #dce4d7; vertical-align: top; }
-.gallery img { display: block; width: 100%; height: 28mm; object-fit: cover; object-position: top; }
-.caption { padding-top: 1mm; color: #526056; font-size: 7.5pt; }
-.statement { margin-top: 3mm; padding: 3mm; border-left: 3px solid #a9c93f; background: #f8faf5; }
-.small { color: #526056; font-size: 8pt; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Besufkad Gym Club Membership System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; color: #17212b; line-height: 1.6; }
+    h1, h2, h3 { color: #16231f; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 22px; margin-top: 28px; }
+    p, li { font-size: 14px; }
+    ul { margin-top: 8px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+    th, td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; vertical-align: top; }
+    .small { font-size: 12px; color: #4b5563; }
+    .section { page-break-inside: avoid; }
+  </style>
 </head>
 <body>
-<section>
-<h1>Besufkad Gym Club Membership System</h1>
-<p class="meta">CoSc3091 — Web Programming · Individual Assignment I · 29 September 2026</p>
-<div class="student">
-<p><strong>Student:</strong> Besufkad Deneke</p>
-<p><strong>Student ID:</strong> 006/2016</p>
-<p><strong>Department:</strong> Computer Science</p>
-<p><strong>Project:</strong> Gym membership and payment receipt verification</p>
-</div>
-<h2>1. Overview</h2>
-<p>This responsive PHP/MySQL application presents a gym’s branches and membership packages. Visitors can register and sign in; members can create a membership plan by selecting its package, exercise focus, branch, start date, duration, and payment method. Plans and enquiries are persisted in MySQL. Each booking has a unique payment reference, and members can submit the transaction code from their receipt for manual administrator comparison. A submitted code does not automatically prove payment; the plan stays pending until verified.</p>
-<h2>2. Implemented features</h2>
-<ul class="features">
-<li>Home, About, Membership, Contact, Register, Login, Dashboard, and Logout pages with shared navigation.</li>
-<li>English and Amharic language switch with translated navigation and core page content.</li>
-<li>Responsive CSS using Grid, Flexbox, and mobile breakpoints; light/dark theme toggle.</li>
-<li>English and Amharic language switch across the shared navigation and main site pages.</li>
-<li>Validated registration, unique username/email checks, password hashing, session login, and logout.</li>
-<li>Protected dashboard with database-backed membership plans and computed monthly totals/end dates.</li>
-<li>Unique per-booking payment reference, receipt transaction-code submission, and pending verification status.</li>
-<li>Upcoming membership listing and cancellation; contact messages persisted in MySQL.</li>
-<li>Prepared statements, server-side validation, CSRF tokens, escaped page output, and popup feedback.</li>
-</ul>
-<h2>3. Database design</h2>
-<p>The schema in <strong>database.sql</strong> defines four tables. Bookings link to users and plans by foreign keys; plan prices are read from the plans table.</p>
-<table>
-<thead><tr><th>Table</th><th>Purpose and key links</th></tr></thead>
-<tbody>
-<tr><td>users</td><td>Member profile, unique email/username, password hash.</td></tr>
-<tr><td>plans</td><td>Package name, monthly price, duration, description.</td></tr>
-<tr><td>bookings</td><td>User and plan foreign keys; branch, membership dates, focus, months, total, payment state, unique reference, submitted receipt transaction code.</td></tr>
-<tr><td>messages</td><td>Contact form submissions.</td></tr>
-</tbody></table>
-<p class="small">Passwords are stored using PHP password hashing. The contact messages table is independent and records enquiries.</p>
-</section>
-<section class="page-break">
-<h2>Entity relationship diagram</h2>
-<img class="erd" src="ERD.svg" width="680" height="293" alt="Entity relationship diagram for users, plans, bookings and messages">
-<h2>4. Validation and evidence</h2>
-<p>PHP syntax was checked across the application; JavaScript syntax was checked with Node.js. Browser testing covered registration, sign-in, payment-method account popup, membership submission, plan foreign-key persistence, receipt-code submission, and cancellation. MySQL queries confirmed test bookings and transaction codes were stored; temporary test data was removed afterward.</p>
-<table class="gallery"><tbody>
-<tr><td><img src="screenshots/home.png" width="320" height="180" alt="Gym website home page"><div class="caption">Home — landing page and navigation</div></td><td><img src="screenshots/about-student.png" width="320" height="180" alt="About me page student details"><div class="caption">About me — name, ID, department and bio</div></td></tr>
-<tr><td><img src="screenshots/memberships.png" width="320" height="180" alt="Membership plans"><div class="caption">Membership — monthly packages</div></td><td><img src="screenshots/dashboard-payment.png" width="320" height="180" alt="Member payment dialog and receipt code"><div class="caption">Dashboard — payment and receipt-code workflow</div></td></tr>
-<tr><td><img src="screenshots/register.png" width="320" height="180" alt="Registration page"><div class="caption">Register — new member form</div></td><td><img src="screenshots/contact.png" width="320" height="180" alt="Contact page"><div class="caption">Contact — inquiry form</div></td></tr>
-</tbody></table>
-<h2>5. Individual contribution</h2>
-<div class="statement"><p>I, Besufkad Deneke, developed the Besufkad Gym Club Membership System for the CoSc3091 individual assignment. My contribution includes the responsive multilingual website, PHP registration and session-based authentication, MySQL schema and prepared-statement integration, membership booking and payment reference workflow, receipt transaction-code submission, validation, testing, and project documentation.</p></div>
-<h2>6. Submission notes</h2>
-<p>The repository README describes local PHP/MySQL setup and test-account creation. There is no pre-seeded member login: evaluators register through the site. No live deployment is configured; the local run instructions are provided.</p>
-</section>
+  <h1>Besufkad Gym Club Membership System</h1>
+  <p class="small">Student: Besufkad Deneke &nbsp;|&nbsp; ID: 006/2016 &nbsp;|&nbsp; Department: Computer Science</p>
+
+  <div class="section">
+    <h2>1. Project overview</h2>
+    <p>The Besufkad Gym Club Membership System is a responsive website for a fictional gym with branches in Addis Ababa. Visitors can review the gym and membership options, register and sign in, and send a contact enquiry. Signed-in members can create a membership plan by selecting a package, training focus, branch, start date, duration, and payment method. Each membership is saved in MySQL and receives a unique payment reference. Members can submit the transaction code printed on their payment receipt so the gym can manually compare it with its payment records.</p>
+    <p>Payment is not processed automatically. A submitted transaction code does not itself prove payment; the membership remains pending until the administrator confirms the receipt.</p>
+  </div>
+
+  <div class="section">
+    <h2>2. Main features</h2>
+    <ul>
+      <li>Seven linked pages: Home, About, Membership, Contact, Register, Login, and member Dashboard; logout is also available to signed-in members.</li>
+      <li>English and Amharic language switch with translated navigation and core page content.</li>
+      <li>Responsive navigation and layouts using CSS Grid, Flexbox, and mobile breakpoints; light/dark theme toggle.</li>
+      <li>Registration with required-field, email, username, and password validation, duplicate checks, and password hashing.</li>
+      <li>Session-based authentication, protected dashboard, and logout confirmation.</li>
+      <li>Database-backed membership creation, branch/focus selection, duration calculation, unique payment reference, and future-plan cancellation.</li>
+      <li>Per-membership payment receipt transaction-code submission for manual verification.</li>
+      <li>Contact form messages persisted in the database.</li>
+      <li>CSRF tokens on forms, MySQLi prepared statements, and HTML output escaping.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. Database design</h2>
+    <p>The schema is defined in <strong>database.sql</strong>. It contains four tables:</p>
+    <table>
+      <thead>
+        <tr><th>Table</th><th>Purpose</th><th>Key relationships</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>users</td><td>Member profile and password hash</td><td>One user can own many bookings</td></tr>
+        <tr><td>plans</td><td>Membership plan name, monthly price, duration, and description</td><td>One plan can be referenced by many bookings</td></tr>
+        <tr><td>bookings</td><td>Membership selection, dates, price, payment status, reference, and transaction code</td><td>Foreign keys to users and plans</td></tr>
+        <tr><td>messages</td><td>Contact form submissions</td><td>Independent enquiry records</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>4. Implementation and testing</h2>
+    <p>The application uses HTML5 semantic page structure, shared PHP header/footer includes, external CSS and JavaScript, PHP sessions, prepared statements, and server-side validation. Validation performed during development included PHP syntax checks, JavaScript syntax checks, browser checks for registration, sign-in, payment flow, and cancellation, plus MySQL checks confirming bookings and transaction codes persist in the database.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Individual contribution</h2>
+    <p>I, Besufkad Deneke, developed the Besufkad Gym Club Membership System for the CoSc3091 individual assignment. My contribution includes the responsive multilingual website, PHP registration and session-based authentication, MySQL schema and prepared-statement integration, membership booking and payment reference workflow, receipt transaction-code submission, validation, testing, and project documentation.</p>
+  </div>
+
+  <div class="section">
+    <h2>6. Submission files</h2>
+    <p>The project source, database export, README, screenshots, ER diagram, and report are included in the submission ZIP. The public repository contains the same project source and documentation.</p>
+  </div>
 </body>
 </html>
