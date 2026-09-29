@@ -34,7 +34,7 @@ $language_url = $current_path . '?' . http_build_query($current_query);
         <a class="<?= $current_page === 'contact.php' ? 'active' : '' ?>" href="contact.php"><?= htmlspecialchars($t['nav_contact'], ENT_QUOTES, 'UTF-8') ?></a>
         <?php if (isset($_SESSION['user_id'])): ?>
             <a class="<?= $current_page === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php"><?= htmlspecialchars($t['nav_my_bookings'], ENT_QUOTES, 'UTF-8') ?></a>
-            <a href="logout.php"><?= htmlspecialchars($t['nav_sign_out'], ENT_QUOTES, 'UTF-8') ?></a>
+            <a class="logout-link" href="logout.php" onclick="return confirm(<?= json_encode($t['logout_confirm'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP, 256) ?>);"><?= htmlspecialchars($t['nav_sign_out'], ENT_QUOTES, 'UTF-8') ?></a>
         <?php else: ?>
             <a class="<?= $current_page === 'login.php' ? 'active' : '' ?>" href="login.php"><?= htmlspecialchars($t['nav_sign_in'], ENT_QUOTES, 'UTF-8') ?></a>
         <?php endif; ?>

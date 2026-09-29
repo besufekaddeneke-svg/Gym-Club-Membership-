@@ -56,7 +56,7 @@ There is no seeded member account. Use **Join the club** to register an account,
 - 4 Days / Week — ETB 3,500 per month
 - Whole Week — ETB 5,000 per month
 
-The payment account numbers in this student demonstration are example destinations supplied for the project. Confirm ownership and authorization before accepting real payments. Payment status remains pending until an administrator manually verifies the receipt and submitted transaction code.
+The payment account numbers in this student demonstration are example destinations supplied for the project. Payment status remains pending until an administrator manually verifies the receipt and submitted transaction code.
 
 ## Database design and report
 
