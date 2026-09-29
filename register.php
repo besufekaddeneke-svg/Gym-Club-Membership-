@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Enter a valid email address.';
     } elseif (!preg_match('/^[a-zA-Z0-9_.-]{3,30}$/', $form_values['username'])) {
         $error = 'Username must be 3–30 characters and use letters, numbers, dots, dashes or underscores.';
-    } elseif (strlen($password) < 8 || strlen($password) > 128) {
-        $error = 'Choose a password between 8 and 128 characters.';
+    } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/', $password)) {
+        $error = 'Password must be 8–128 characters long and include uppercase, lowercase and a number.';
     } elseif ($password !== $confirm_password) {
         $error = 'The passwords do not match.';
     } else {

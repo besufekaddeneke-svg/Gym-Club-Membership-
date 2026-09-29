@@ -157,21 +157,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const regForm = document.getElementById("registerForm");
     if (regForm) {
+        const usernameInput = document.getElementById("username");
         const passwordInput = document.getElementById("password");
         const confirmInput = document.getElementById("confirm_password");
-        const validatePasswords = function () {
-            confirmInput.setCustomValidity(confirmInput.value && confirmInput.value !== passwordInput.value ? "Passwords do not match." : "");
+
+        const validateUsername = function () {
+            const value = usernameInput.value.trim();
+            if (!/^[A-Za-z0-9_.-]{3,30}$/.test(value)) {
+                usernameInput.setCustomValidity("Username must be 3–30 characters using letters, numbers, dots, dashes or underscores.");
+            } else {
+                usernameInput.setCustomValidity("");
+            }
         };
 
-        passwordInput.addEventListener("input", validatePasswords);
-        confirmInput.addEventListener("input", validatePasswords);
-        regForm.addEventListener("submit", function (event) {
-            validatePasswords();
-            if (passwordInput.value.length < 8) {
-                passwordInput.setCustomValidity("Use at least 8 characters.");
+        const validatePasswords = function () {
+            const password = passwordInput.value;
+            if (password.length < 8 || password.length > 128) {
+                passwordInput.setCustomValidity("Use a password between 8 and 128 characters.");
+            } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(password)) {
+                passwordInput.setCustomValidity("Use uppercase, lowercase and at least one number.");
             } else {
                 passwordInput.setCustomValidity("");
             }
+            confirmInput.setCustomValidity(confirmInput.value && confirmInput.value !== passwordInput.value ? "Passwords do not match." : "");
+        };
+
+        usernameInput.addEventListener("input", validateUsername);
+        passwordInput.addEventListener("input", validatePasswords);
+        confirmInput.addEventListener("input", validatePasswords);
+        regForm.addEventListener("submit", function (event) {
+            validateUsername();
+            validatePasswords();
             if (!regForm.reportValidity()) event.preventDefault();
         });
     }
