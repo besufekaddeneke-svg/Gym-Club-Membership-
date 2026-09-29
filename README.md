@@ -1,39 +1,68 @@
-# Gym Club Membership System (CoSc3091 Project)
+# Besufkad Gym Club Membership System
 
-## Project Title
-PowerPulse Gym Club Membership System
+CoSc3091 Web Programming individual assignment. A responsive PHP/MySQL website for presenting gym memberships, registering members, saving membership plans, and recording payment receipt transaction codes for manual verification.
 
-## Core Features
-- **User Authentication**: Secure registration and login with `password_hash()` and `password_verify()`.
-- **Session Management**: Session persistence across protected pages with secure logout.
-- **Member bookings**: Registered members can reserve a class at one of four branches, view upcoming bookings, and cancel future reservations.
-- **Interactive Contact Form**: Stores user queries directly in the database.
-- **Responsive UI**: Mobile navigation, saved light/dark theme, responsive membership and class pages.
-- **Validation & security**: Client and server validation, prepared statements, password hashing, and CSRF protection on forms.
+## Features
 
-## Technologies Used
-- **Frontend**: HTML5, CSS3 (Flexbox/Grid), JavaScript
-- **Backend**: PHP 8.x
-- **Database**: MySQL / MariaDB (using MySQLi prepared statements)
+- Home, About, Membership, Contact, Register, Login, and member Dashboard pages with shared navigation.
+- Student developer profile on About page, including full name, student ID, department, and project motivation.
+- Account registration with server-side validation, duplicate checks, and `password_hash()` password storage.
+- Login/logout using PHP sessions and `password_verify()`.
+- Membership selection by plan, exercise focus, branch, start date, payment method, and number of months.
+- Membership bookings persisted in MySQL; each booking receives a unique payment reference.
+- Members can submit or update the transaction code from their payment receipt. The code is stored on that membership while the admin verifies it manually.
+- Contact enquiries stored in MySQL.
+- CSRF-protected forms, prepared SQL statements, output escaping, responsive Flexbox/Grid styling, theme toggle, and popup dialogs.
 
-## Setup & Running Instructions (Local XAMPP)
-1. Copy the project folder to `xampp/htdocs/gym_system`.
-2. Start Apache and MySQL in XAMPP Control Panel.
-3. Import the `database.sql` file as a MySQL administrator. It creates `gym_db`, the local app account, and sample membership plans.
-4. Access the application at `http://localhost/gym_system`.
+## Technology
 
-### Linux development server
-1. Ensure MySQL or MariaDB is running.
-2. Import `database.sql` as a MySQL administrator (for example, through phpMyAdmin). The SQL creates the local development user `gym_user` with a strong local password and grants access to `gym_db`.
-3. Start the app from the project directory with `php -S 127.0.0.1:8000` and open `http://127.0.0.1:8000`.
-4. If you use different credentials, update `config/db.php` to match your local database account.
+- HTML5, CSS3, JavaScript
+- PHP 8 with MySQLi
+- MySQL 8 or MariaDB
 
-## Try the member experience
-Register a member account from the website, then sign in to book and cancel classes. The SQL setup does not insert a demo user.
+## Pages
 
-## Membership packages
-- **3 Days / Week** — ETB 1,500 per month
-- **4 Days / Week** — ETB 2,000 per month
-- **Every Day Access** — ETB 2,500 per month
+| Page | Purpose |
+| --- | --- |
+| `index.php` | Gym landing page |
+| `about.php` | Gym information and student profile |
+| `services.php` | Membership packages and payment information |
+| `contact.php` | Contact form; stores enquiries |
+| `register.php` | Member registration |
+| `login.php` | Member sign-in |
+| `dashboard.php` | Protected membership selection, payment reference, receipt code, and cancellation |
+| `logout.php` | Ends the member session |
 
-Package amounts are sample rates and can be changed in `database.sql` before importing the setup.
+## Local setup
+
+Requirements: PHP 8+, MySQL/MariaDB, and the PHP `mysqli` extension.
+
+1. Start MySQL/MariaDB.
+2. Import `database.sql` as a database administrator. It creates `gym_db`, the local development database user, the tables, and the three membership package rows.
+3. The database connection reads `GYM_DB_HOST`, `GYM_DB_USER`, `GYM_DB_PASSWORD`, and `GYM_DB_NAME` environment variables. If unset, it uses the local defaults in `database.sql`. Set environment variables for hosted use and never deploy the development database password.
+4. From the project directory, start PHP's development server with `php -S 127.0.0.1:8000`.
+5. Open `http://127.0.0.1:8000`.
+
+For XAMPP, place the project folder under `htdocs`, start Apache and MySQL, import `database.sql` in phpMyAdmin, and open the corresponding `http://localhost/<folder-name>/` address.
+
+## Test account
+
+There is no seeded member account. Use **Join the club** to register an account, then sign in and create a membership plan. This avoids shipping a shared demo password.
+
+## Membership rates
+
+- 2 Days / Week — ETB 2,000 per month
+- 4 Days / Week — ETB 3,500 per month
+- Whole Week — ETB 5,000 per month
+
+The payment account numbers in this student demonstration are example destinations supplied for the project. Confirm ownership and authorization before accepting real payments. Payment status remains pending until an administrator manually verifies the receipt and submitted transaction code.
+
+## Database design and report
+
+The schema is in `database.sql`. The report, table summary, and ER diagram are in `docs/REPORT.pdf` and editable form in `docs/REPORT.md`. Page screenshots are in `docs/screenshots/`.
+
+## Repository and deployment
+
+Repository: <https://github.com/besufekaddeneke-svg/Gym-Club-Membership->
+
+No public deployment is configured. Use the local setup above to evaluate the PHP/MySQL application.

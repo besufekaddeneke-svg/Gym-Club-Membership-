@@ -9,11 +9,16 @@ if (!isset($_SESSION['user_id'])) {
 
 $page_title = 'My bookings | Besufkad Gym';
 $user_id = (int) $_SESSION['user_id'];
-$plan_prices = [
-    '2 Days / Week' => 2000,
-    '4 Days / Week' => 3500,
-    'Whole Week' => 5000,
-];
+$plan_prices = [];
+$plan_ids = [];
+$plans_result = $conn->query('SELECT id, name, price FROM plans ORDER BY price ASC');
+if ($plans_result) {
+    while ($plan = $plans_result->fetch_assoc()) {
+        $plan_prices[$plan['name']] = (float) $plan['price'];
+        $plan_ids[$plan['name']] = (int) $plan['id'];
+    }
+    $plans_result->free();
+}
 $exercise_types = ['Cardio', 'Muscle', 'MMA', 'General Fitness'];
 $payment_options = [
     'Telebirr' => ['account_label' => 'Telebirr number', 'account_number' => '0911223344'],
@@ -115,10 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($already_booked) {
                 $message = 'You already have that plan and focus scheduled for that start date.';
             } else {
+                $plan_id = $plan_ids[$plan_name];
                 $payment_status = 'pending';
                 $payment_reference = 'BG-' . $today->format('ymd') . '-' . strtoupper(bin2hex(random_bytes(5)));
-                $stmt = $conn->prepare('INSERT INTO bookings (user_id, class_name, branch, booking_date, end_date, exercise_type, months_paid, total_price, payment_method, payment_status, payment_reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $stmt->bind_param('isssssidsss', $user_id, $plan_name, $branch, $booking_date, $end_date, $exercise_type, $months_paid, $total_price, $payment_method, $payment_status, $payment_reference);
+                $stmt = $conn->prepare('INSERT INTO bookings (user_id, plan_id, class_name, branch, booking_date, end_date, exercise_type, months_paid, total_price, payment_method, payment_status, payment_reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $stmt->bind_param('iisssssidsss', $user_id, $plan_id, $plan_name, $branch, $booking_date, $end_date, $exercise_type, $months_paid, $total_price, $payment_method, $payment_status, $payment_reference);
                 if ($stmt->execute()) {
                     $_SESSION['dashboard_notice'] = [
                         'type' => 'payment',
@@ -191,6 +197,16 @@ include 'includes/header.php';
         This unique code identifies your plan. After transferring, enter the transaction code from your receipt in the form on your plan card. Send the receipt to the admin; your plan remains pending until verified.
     </p>
     <button type="button" class="button dialog-done" data-dialog-close>Continue</button>
+</dialog>
+<dialog class="notice-dialog" id="cancelDialog" aria-labelledby="cancelDialogTitle" aria-describedby="cancelDialogDescription">
+    <div class="dialog-icon" aria-hidden="true">?</div>
+    <p class="eyebrow">Confirm change</p>
+    <h2 id="cancelDialogTitle">Cancel this plan?</h2>
+    <p id="cancelDialogDescription" class="dialog-copy">This upcoming membership plan will be removed from your dashboard.</p>
+    <div class="dialog-actions">
+        <button type="button" class="button button-outline" data-cancel-dialog-close>Keep plan</button>
+        <button type="button" class="button" id="confirmCancelButton">Cancel plan</button>
+    </div>
 </dialog>
 
 <div class="dashboard-grid">
@@ -286,7 +302,7 @@ include 'includes/header.php';
                                 </form>
                             <?php endif; ?>
                         </div>
-                        <form action="dashboard.php" method="POST" onsubmit="return confirm('Cancel this plan?');">
+                        <form action="dashboard.php" method="POST" data-confirm="Cancel this upcoming membership plan?">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
                             <input type="hidden" name="action" value="cancel">
                             <input type="hidden" name="booking_id" value="<?= (int) $booking['id'] ?>">

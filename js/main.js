@@ -7,18 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (localStorage.getItem("theme") === "dark") {
             document.body.classList.add("dark-mode");
         }
-    } catch (error) {
-        // Keep the current theme if browser storage is unavailable.
-    }
+    } catch {}
 
     if (themeToggle) {
         themeToggle.addEventListener("click", function () {
             document.body.classList.toggle("dark-mode");
             try {
                 localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
-            } catch (error) {
-                // Theme still changes for this page view.
-            }
+            } catch {}
         });
     }
 
@@ -100,6 +96,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         }
+    }
+
+    const siteMessageDialog = document.getElementById("siteMessageDialog");
+    if (siteMessageDialog) {
+        if (siteMessageDialog.dataset.autoOpen === "true") {
+            if (typeof siteMessageDialog.showModal === "function") siteMessageDialog.showModal();
+            else siteMessageDialog.setAttribute("open", "");
+        }
+
+        siteMessageDialog.querySelectorAll("[data-site-dialog-close]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                if (typeof siteMessageDialog.close === "function") siteMessageDialog.close();
+                else siteMessageDialog.removeAttribute("open");
+            });
+        });
+    }
+
+    const cancelDialog = document.getElementById("cancelDialog");
+    if (cancelDialog) {
+        let pendingCancelForm = null;
+
+        document.querySelectorAll("form[data-confirm]").forEach(function (form) {
+            form.addEventListener("submit", function (event) {
+                if (form.dataset.confirmed === "true") {
+                    delete form.dataset.confirmed;
+                    return;
+                }
+
+                event.preventDefault();
+                pendingCancelForm = form;
+                document.getElementById("cancelDialogDescription").textContent = form.dataset.confirm;
+                if (typeof cancelDialog.showModal === "function") cancelDialog.showModal();
+                else cancelDialog.setAttribute("open", "");
+            });
+        });
+
+        const closeCancelDialog = function () {
+            if (typeof cancelDialog.close === "function") cancelDialog.close();
+            else cancelDialog.removeAttribute("open");
+            pendingCancelForm = null;
+        };
+
+        cancelDialog.querySelectorAll("[data-cancel-dialog-close]").forEach(function (button) {
+            button.addEventListener("click", closeCancelDialog);
+        });
+
+        document.getElementById("confirmCancelButton").addEventListener("click", function () {
+            const form = pendingCancelForm;
+            closeCancelDialog();
+            if (form) {
+                form.dataset.confirmed = "true";
+                form.requestSubmit();
+            }
+        });
     }
 
     const regForm = document.getElementById("registerForm");

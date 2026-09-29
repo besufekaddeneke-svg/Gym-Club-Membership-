@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+.vscode/
+config/db.local.php
+config/secrets.php
+.env
+.env.*
+!.env.example
+*-CoSc3091-Submission.zip

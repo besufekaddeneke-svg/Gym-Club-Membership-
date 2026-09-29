@@ -8,7 +8,6 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrf_token = $_SESSION['csrf_token'];
 
-// Switch language if requested
 if (isset($_GET['lang'])) {
     $requested_lang = $_GET['lang'];
     if (in_array($requested_lang, ['en', 'am'], true)) {
@@ -18,7 +17,6 @@ if (isset($_GET['lang'])) {
 
 $current_lang = $_SESSION['lang'] ?? 'en';
 
-// Translation Dictionary
 $translations = [
     'en' => [
         'home' => 'Home',

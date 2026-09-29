@@ -52,14 +52,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $check->close();
     }
 }
+$dialog_message = $success ? 'Your account is ready. Sign in to book your first class.' : $error;
+$dialog_title = $success ? 'Welcome to the club' : 'Registration issue';
+$dialog_eyebrow = $success ? 'Account created' : 'Please check your details';
+$dialog_icon = $success ? '✓' : '!';
+if ($success) {
+    $dialog_link_href = 'login.php';
+    $dialog_link_label = 'Sign in';
+}
 include 'includes/header.php';
 ?>
 
 <div class="page-intro"><p class="eyebrow">Your membership starts here</p><h2>Make yourself at home.</h2><p>Create your free member account to book classes and manage your upcoming visits.</p></div>
-<?php if ($error): ?><div class="alert alert-danger" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
-<?php if ($success): ?>
-    <div class="alert alert-success" role="status">Your account is ready. <a href="login.php"><strong>Sign in to book your first class.</strong></a></div>
-<?php else: ?>
+<?php include 'includes/message_dialog.php'; ?>
+<?php if (!$success): ?>
     <form class="form-card" id="registerForm" action="register.php" method="POST">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
         <div class="form-group"><label for="full_name">Full name</label><input id="full_name" type="text" name="full_name" value="<?= htmlspecialchars($form_values['full_name'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="name" maxlength="100" required></div>

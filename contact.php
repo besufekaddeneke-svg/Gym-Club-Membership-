@@ -30,23 +30,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!is_string($posted_token) || !hash_equals($csrf_token, $posted_token)) {
         $msg = 'Your form session expired. Please refresh and try again.';
-        $msg_class = 'alert-danger';
+        $msg_class = 'error';
     } elseif ($name === '' || $email === '' || $message === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $msg = 'Please enter your name, a valid email and a message.';
-        $msg_class = 'alert-danger';
+        $msg_class = 'error';
     } else {
         $stmt = $conn->prepare('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)');
         $stmt->bind_param('sss', $name, $email, $message);
         if ($stmt->execute()) {
             $msg = 'Thanks for reaching out. Your enquiry has been saved.';
-            $msg_class = 'alert-success';
+            $msg_class = 'success';
         } else {
             $msg = 'We could not save your message. Please try again.';
-            $msg_class = 'alert-danger';
+            $msg_class = 'error';
         }
         $stmt->close();
     }
 }
+$dialog_message = $msg;
+$dialog_title = $msg_class === 'success' ? 'Message received' : 'Please check your message';
+$dialog_eyebrow = $msg_class === 'success' ? 'Thank you' : 'Message not sent';
+$dialog_icon = $msg_class === 'success' ? '✓' : '!';
 include 'includes/header.php';
 ?>
 
@@ -69,9 +73,7 @@ include 'includes/header.php';
     </div>
 
     <div>
-        <?php if ($msg): ?>
-            <div class="alert <?= htmlspecialchars($msg_class, ENT_QUOTES, 'UTF-8') ?>" role="status"><?= htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') ?></div>
-        <?php endif; ?>
+        <?php include 'includes/message_dialog.php'; ?>
         <form class="form-card" action="contact.php" method="POST">
             <h3>Send us a message</h3>
             <p class="form-intro">Your message will be recorded so the club can review your enquiry.</p>

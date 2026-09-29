@@ -1,12 +1,10 @@
 CREATE DATABASE IF NOT EXISTS gym_db;
 USE gym_db;
 
--- Development account used by config/db.php. Run this file as a MySQL admin.
 CREATE USER IF NOT EXISTS 'gym_user'@'localhost' IDENTIFIED BY 'J8!vQ2#nR5@xL9p';
 ALTER USER 'gym_user'@'localhost' IDENTIFIED BY 'J8!vQ2#nR5@xL9p';
 GRANT ALL PRIVILEGES ON gym_db.* TO 'gym_user'@'localhost';
 
--- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
@@ -16,7 +14,6 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Membership Plans Table
 CREATE TABLE IF NOT EXISTS plans (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -25,10 +22,10 @@ CREATE TABLE IF NOT EXISTS plans (
     description TEXT
 );
 
--- 3. Membership Bookings Table (Core Project Functionality)
 CREATE TABLE IF NOT EXISTS bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    plan_id INT NULL,
     class_name VARCHAR(100) NOT NULL,
     branch VARCHAR(100) NOT NULL,
     booking_date DATE NOT NULL,
@@ -41,11 +38,51 @@ CREATE TABLE IF NOT EXISTS bookings (
     payment_reference CHAR(20) NULL,
     payment_transaction_code VARCHAR(100) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_bookings_plan_id (plan_id),
     UNIQUE KEY uq_bookings_payment_reference (payment_reference),
+    CONSTRAINT fk_bookings_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE RESTRICT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Bring forward databases created before branch selection was added.
+SET @plan_id_column_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'plan_id'
+);
+SET @plan_id_column_migration = IF(
+    @plan_id_column_exists = 0,
+    'ALTER TABLE bookings ADD COLUMN plan_id INT NULL AFTER user_id',
+    'SELECT 1'
+);
+PREPARE plan_id_column_stmt FROM @plan_id_column_migration;
+EXECUTE plan_id_column_stmt;
+DEALLOCATE PREPARE plan_id_column_stmt;
+
+SET @plan_id_index_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND INDEX_NAME = 'idx_bookings_plan_id'
+);
+SET @plan_id_index_migration = IF(
+    @plan_id_index_exists = 0,
+    'ALTER TABLE bookings ADD INDEX idx_bookings_plan_id (plan_id)',
+    'SELECT 1'
+);
+PREPARE plan_id_index_stmt FROM @plan_id_index_migration;
+EXECUTE plan_id_index_stmt;
+DEALLOCATE PREPARE plan_id_index_stmt;
+
+SET @plan_id_foreign_key_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND CONSTRAINT_NAME = 'fk_bookings_plan'
+);
+SET @plan_id_foreign_key_migration = IF(
+    @plan_id_foreign_key_exists = 0,
+    'ALTER TABLE bookings ADD CONSTRAINT fk_bookings_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE RESTRICT',
+    'SELECT 1'
+);
+PREPARE plan_id_foreign_key_stmt FROM @plan_id_foreign_key_migration;
+EXECUTE plan_id_foreign_key_stmt;
+DEALLOCATE PREPARE plan_id_foreign_key_stmt;
+
 SET @branch_column_exists = (
     SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'branch'
@@ -59,7 +96,6 @@ PREPARE branch_migration_stmt FROM @branch_migration;
 EXECUTE branch_migration_stmt;
 DEALLOCATE PREPARE branch_migration_stmt;
 
--- Add unique member-visible payment references to existing bookings.
 SET @payment_reference_column_exists = (
     SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'payment_reference'
@@ -86,7 +122,6 @@ PREPARE payment_reference_index_stmt FROM @payment_reference_index_migration;
 EXECUTE payment_reference_index_stmt;
 DEALLOCATE PREPARE payment_reference_index_stmt;
 
--- Store the transaction code supplied by the member from their payment receipt.
 SET @payment_transaction_code_column_exists = (
     SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'payment_transaction_code'
@@ -100,7 +135,6 @@ PREPARE payment_transaction_code_stmt FROM @payment_transaction_code_migration;
 EXECUTE payment_transaction_code_stmt;
 DEALLOCATE PREPARE payment_transaction_code_stmt;
 
--- 4. Contact Messages Table
 CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -109,7 +143,6 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Convert the original sample plans into locally priced membership packages.
 UPDATE plans SET name = '2 Days / Week' WHERE name = 'Basic Fitness';
 UPDATE plans SET name = '4 Days / Week' WHERE name = 'Pro Athlete';
 UPDATE plans SET name = 'Whole Week' WHERE name = 'VIP Elite';
@@ -129,3 +162,8 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = '4 Days / Week')
 UNION ALL
 SELECT 'Whole Week', 5000, 'month', 'Seven-day access for members who want a full weekly routine and maximum flexibility.'
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM plans WHERE name = 'Whole Week');
+
+UPDATE bookings AS b
+JOIN plans AS p ON p.name = b.class_name
+SET b.plan_id = p.id
+WHERE b.plan_id IS NULL;

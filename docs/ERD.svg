@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="430" viewBox="0 0 1000 430" role="img" aria-labelledby="title description">
+  <title id="title">Besufkad Gym database entity relationship diagram</title>
+  <desc id="description">Users and plans each have one-to-many relationships with bookings. Messages are standalone contact enquiries.</desc>
+  <style>
+    .entity { fill: #fff; stroke: #8ca43c; stroke-width: 2; rx: 12; }
+    .head { fill: #d9f56b; }
+    .name { font: bold 20px sans-serif; fill: #15201b; }
+    .field { font: 15px sans-serif; fill: #33413a; }
+    .relation { stroke: #516143; stroke-width: 2.5; fill: none; }
+    .label { font: 14px sans-serif; fill: #33413a; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#516143"/></marker>
+  </defs>
+  <rect class="entity" x="35" y="65" width="255" height="245"/>
+  <path class="head" d="M47 65 H278 Q290 65 290 77 V112 H35 V77 Q35 65 47 65Z"/>
+  <text class="name" x="58" y="97">USERS</text>
+  <text class="field" x="55" y="143">PK id</text>
+  <text class="field" x="55" y="174">full_name</text>
+  <text class="field" x="55" y="205">email (unique)</text>
+  <text class="field" x="55" y="236">username (unique)</text>
+  <text class="field" x="55" y="267">password hash</text>
+  <rect class="entity" x="710" y="65" width="255" height="245"/>
+  <path class="head" d="M722 65 H953 Q965 65 965 77 V112 H710 V77 Q710 65 722 65Z"/>
+  <text class="name" x="733" y="97">PLANS</text>
+  <text class="field" x="730" y="143">PK id</text>
+  <text class="field" x="730" y="174">name</text>
+  <text class="field" x="730" y="205">monthly price</text>
+  <text class="field" x="730" y="236">duration</text>
+  <text class="field" x="730" y="267">description</text>
+  <rect class="entity" x="365" y="65" width="270" height="290"/>
+  <path class="head" d="M377 65 H623 Q635 65 635 77 V112 H365 V77 Q365 65 377 65Z"/>
+  <text class="name" x="388" y="97">BOOKINGS</text>
+  <text class="field" x="385" y="143">PK id</text>
+  <text class="field" x="385" y="174">FK user_id → users.id</text>
+  <text class="field" x="385" y="205">FK plan_id → plans.id</text>
+  <text class="field" x="385" y="236">branch, start/end dates</text>
+  <text class="field" x="385" y="267">focus, months, total price</text>
+  <text class="field" x="385" y="298">payment method/status</text>
+  <text class="field" x="385" y="329">unique ref + receipt code</text>
+  <path class="relation" d="M290 185 H350" marker-end="url(#arrow)"/>
+  <text class="label" x="293" y="174">1 to many</text>
+  <path class="relation" d="M710 185 H650" marker-end="url(#arrow)"/>
+  <text class="label" x="652" y="174">1 to many</text>
+  <rect class="entity" x="365" y="375" width="270" height="45"/>
+  <text class="name" x="388" y="405">MESSAGES: contact enquiries</text>
+</svg>

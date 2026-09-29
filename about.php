@@ -14,6 +14,20 @@ include 'includes/header.php';
     <div class="split-image" role="img" aria-label="A bright, welcoming gym training floor"></div>
 </section>
 
+<section class="section student-section" aria-labelledby="student-heading">
+    <div class="section-heading">
+        <p class="eyebrow">Student developer</p>
+        <h2 id="student-heading">About the student</h2>
+        <p>The student developer and motivation behind this project.</p>
+    </div>
+    <div class="student-profile">
+        <p><strong>Full name</strong><span>Besufkad Deneke</span></p>
+        <p><strong>Student ID</strong><span>006/2016</span></p>
+        <p><strong>Department</strong><span>Computer Science</span></p>
+        <p class="student-bio"><strong>Personal introduction</strong><span>I am studying computer science and am interested in applying web technologies to practical services. I chose this project because access to gyms is limited in many areas of Ethiopia, and a clear membership platform can help clubs present their services and manage member registrations.</span></p>
+    </div>
+</section>
+
 <div class="about-values">
     <article class="about-value"><strong>People before PRs</strong><p>A friendly hello and thoughtful guidance matter as much as the equipment.</p></article>
     <article class="about-value"><strong>Progress, your way</strong><p>Start where you are. Our classes and coaching are designed for different experience levels.</p></article>

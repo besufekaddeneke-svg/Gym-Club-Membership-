@@ -36,11 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 }
+$dialog_message = $error;
+$dialog_title = 'Sign-in issue';
+$dialog_eyebrow = 'Please try again';
+$dialog_icon = '!';
 include 'includes/header.php';
 ?>
 
 <div class="page-intro"><p class="eyebrow">Your next workout awaits</p><h2>Welcome back.</h2><p>Sign in to book a class and keep your training plans in one place.</p></div>
-<?php if ($error): ?><div class="alert alert-danger" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+<?php include 'includes/message_dialog.php'; ?>
 <form class="form-card" action="login.php" method="POST">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
     <div class="form-group"><label for="username">Username</label><input id="username" type="text" name="username" value="<?= htmlspecialchars($username_value, ENT_QUOTES, 'UTF-8') ?>" autocomplete="username" required></div>
