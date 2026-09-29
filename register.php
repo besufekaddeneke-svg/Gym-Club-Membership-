@@ -53,30 +53,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $dialog_message = $success ? 'Your account is ready. Sign in to book your first class.' : $error;
-$dialog_title = $success ? 'Welcome to the club' : 'Registration issue';
-$dialog_eyebrow = $success ? 'Account created' : 'Please check your details';
+$dialog_title = $success ? ($current_lang === 'am' ? 'እንኳን ወደ ክለቡ በደህና መጡ' : 'Welcome to the club') : ($current_lang === 'am' ? 'የምዝገባ ችግር' : 'Registration issue');
+$dialog_eyebrow = $success ? ($current_lang === 'am' ? 'መለያ ተፈጥሯል' : 'Account created') : ($current_lang === 'am' ? 'ያስገቡትን ያረጋግጡ' : 'Please check your details');
 $dialog_icon = $success ? '✓' : '!';
 if ($success) {
     $dialog_link_href = 'login.php';
-    $dialog_link_label = 'Sign in';
+    $dialog_link_label = $t['sign_in_button'];
 }
 include 'includes/header.php';
 ?>
 
-<div class="page-intro"><p class="eyebrow">Your membership starts here</p><h2>Make yourself at home.</h2><p>Create your free member account to book classes and manage your upcoming visits.</p></div>
+<div class="page-intro"><p class="eyebrow"><?= htmlspecialchars($t['register_eyebrow'], ENT_QUOTES, 'UTF-8') ?></p><h2><?= htmlspecialchars($t['register_title'], ENT_QUOTES, 'UTF-8') ?></h2><p><?= htmlspecialchars($t['register_intro'], ENT_QUOTES, 'UTF-8') ?></p></div>
 <?php include 'includes/message_dialog.php'; ?>
 <?php if (!$success): ?>
     <form class="form-card" id="registerForm" action="register.php" method="POST">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
-        <div class="form-group"><label for="full_name">Full name</label><input id="full_name" type="text" name="full_name" value="<?= htmlspecialchars($form_values['full_name'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="name" maxlength="100" required></div>
-        <div class="form-group"><label for="email">Email address</label><input id="email" type="email" name="email" value="<?= htmlspecialchars($form_values['email'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="email" maxlength="100" required></div>
-        <div class="form-group"><label for="username">Choose a username</label><input id="username" type="text" name="username" value="<?= htmlspecialchars($form_values['username'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="username" minlength="3" maxlength="30" required><p class="form-hint">3–30 characters. Letters, numbers, dots, dashes and underscores.</p></div>
+        <div class="form-group"><label for="full_name"><?= htmlspecialchars($t['full_name'], ENT_QUOTES, 'UTF-8') ?></label><input id="full_name" type="text" name="full_name" value="<?= htmlspecialchars($form_values['full_name'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="name" maxlength="100" required></div>
+        <div class="form-group"><label for="email"><?= htmlspecialchars($t['email_address'], ENT_QUOTES, 'UTF-8') ?></label><input id="email" type="email" name="email" value="<?= htmlspecialchars($form_values['email'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="email" maxlength="100" required></div>
+        <div class="form-group"><label for="username"><?= htmlspecialchars($t['choose_username'], ENT_QUOTES, 'UTF-8') ?></label><input id="username" type="text" name="username" value="<?= htmlspecialchars($form_values['username'], ENT_QUOTES, 'UTF-8') ?>" autocomplete="username" minlength="3" maxlength="30" required><p class="form-hint"><?= htmlspecialchars($t['username_hint'], ENT_QUOTES, 'UTF-8') ?></p></div>
         <div class="form-grid">
-            <div class="form-group"><label for="password">Create a password</label><input id="password" type="password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
-            <div class="form-group"><label for="confirm_password">Confirm password</label><input id="confirm_password" type="password" name="confirm_password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+            <div class="form-group"><label for="password"><?= htmlspecialchars($t['create_password'], ENT_QUOTES, 'UTF-8') ?></label><input id="password" type="password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+            <div class="form-group"><label for="confirm_password"><?= htmlspecialchars($t['confirm_password'], ENT_QUOTES, 'UTF-8') ?></label><input id="confirm_password" type="password" name="confirm_password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
         </div>
-        <button type="submit" class="button button-full">Create my account <span aria-hidden="true">→</span></button>
-        <p class="form-footer">Already a member? <a href="login.php">Sign in</a></p>
+        <button type="submit" class="button button-full"><?= htmlspecialchars($t['create_account_button'], ENT_QUOTES, 'UTF-8') ?> <span aria-hidden="true">→</span></button>
+        <p class="form-footer"><?= htmlspecialchars($t['already_member'], ENT_QUOTES, 'UTF-8') ?> <a href="login.php"><?= htmlspecialchars($t['sign_in_button'], ENT_QUOTES, 'UTF-8') ?></a></p>
     </form>
 <?php endif; ?>
 

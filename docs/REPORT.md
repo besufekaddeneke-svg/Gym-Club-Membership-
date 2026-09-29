@@ -17,7 +17,9 @@ Payment is not processed automatically. A submitted transaction code does not it
 ## 2. Main features
 
 - Seven linked pages: Home, About, Membership, Contact, Register, Login, and member Dashboard; logout is also available to signed-in members.
+- English and Amharic language switch with translated navigation and core page content.
 - Responsive navigation and layouts using CSS Grid, Flexbox, and mobile breakpoints; light/dark theme toggle.
+- English and Amharic language switch across the shared navigation and main site pages.
 - Registration with required-field, email, username, and password validation, duplicate checks, and password hashing.
 - Session-based authentication, protected dashboard, and logout.
 - Database-backed membership creation, plan pricing, branch/focus selection, duration calculation, unique payment reference, and future-plan cancellation.
@@ -111,12 +113,8 @@ Screenshots below were captured from the running application. The dashboard exam
 
 ## 6. Individual contribution
 
-**Draft statement — confirm and edit so it accurately describes your work:** I, Besufkad Deneke, designed and implemented the Besufkad Gym Club Membership System for the CoSc3091 individual assignment. My work includes the page layouts and responsive styling, PHP registration and session-based login, MySQL schema and prepared-statement integration, membership booking and payment-reference workflow, validation, testing, and project documentation.
+I, Besufkad Deneke, developed the Besufkad Gym Club Membership System for the CoSc3091 individual assignment. My contribution includes the responsive multilingual website, PHP registration and session-based authentication, MySQL schema and prepared-statement integration, membership booking and payment reference workflow, receipt transaction-code submission, validation, testing, and project documentation.
 
-## 7. Submission checklist
+## 7. Submission files
 
-- [ ] Confirm that the student profile information and biography are accurate.
-- [ ] Confirm/edit the individual contribution statement.
-- [ ] Check screenshots and report PDF before submitting.
-- [ ] Review the final ZIP and README setup instructions.
-- [ ] Submit the public GitHub repository URL, ZIP, and (if deployed) live URL.
+The project source, database export, README, screenshots, ER diagram, and report are included in the submission ZIP. The public repository contains the same project source and documentation.

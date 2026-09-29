@@ -13,6 +13,7 @@ CoSc3091 Web Programming individual assignment. A responsive PHP/MySQL website f
 - Members can submit or update the transaction code from their payment receipt. The code is stored on that membership while the admin verifies it manually.
 - Contact enquiries stored in MySQL.
 - CSRF-protected forms, prepared SQL statements, output escaping, responsive Flexbox/Grid styling, theme toggle, and popup dialogs.
+- English and Amharic language toggle with translated navigation and core page content.
 
 ## Technology
 

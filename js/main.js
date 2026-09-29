@@ -63,16 +63,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const paymentMethodSelect = document.getElementById("payment_method");
         const paymentOptions = JSON.parse(noticeDialog.dataset.paymentOptions || "{}");
+        const paymentLabels = JSON.parse(noticeDialog.dataset.paymentLabels || "{}");
+        const translations = JSON.parse(noticeDialog.dataset.translations || "{}");
         if (paymentMethodSelect) {
             paymentMethodSelect.addEventListener("change", function () {
                 const method = paymentMethodSelect.value;
                 const details = paymentOptions[method];
                 if (!details) return;
+                const methodLabel = paymentLabels[method] || method;
 
                 document.getElementById("noticeDialogIcon").textContent = "↗";
-                document.getElementById("noticeDialogEyebrow").textContent = "Payment destination";
-                document.getElementById("noticeDialogTitle").textContent = "Pay with " + method;
-                document.getElementById("noticeDialogDescription").textContent = "Transfer to the account below. Your plan-specific payment code will appear after you save your membership plan.";
+                document.getElementById("noticeDialogEyebrow").textContent = translations.payment_destination || "Payment destination";
+                document.getElementById("noticeDialogTitle").textContent = (translations.pay_with || "Pay with") + " " + methodLabel;
+                document.getElementById("noticeDialogDescription").textContent = translations.transfer_instructions || "Transfer to the account below. Your plan-specific payment code will appear after you save your membership plan.";
                 document.getElementById("dialogAccountLabel").textContent = details.account_label;
                 document.getElementById("dialogAccountNumber").textContent = details.account_number;
                 document.getElementById("dialogAccountPanel").hidden = false;
@@ -90,9 +93,9 @@ document.addEventListener("DOMContentLoaded", function () {
             copyReferenceButton.addEventListener("click", async function () {
                 try {
                     await navigator.clipboard.writeText(paymentReferenceValue.textContent.trim());
-                    copyReferenceStatus.textContent = "Payment reference copied.";
+                    copyReferenceStatus.textContent = translations.payment_copied || "Payment reference copied.";
                 } catch (error) {
-                    copyReferenceStatus.textContent = "Copy unavailable. Select and copy the code above.";
+                    copyReferenceStatus.textContent = translations.copy_unavailable || "Copy unavailable. Select and copy the code above.";
                 }
             });
         }

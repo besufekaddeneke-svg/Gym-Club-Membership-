@@ -55,33 +55,33 @@ include 'includes/header.php';
 ?>
 
 <section class="page-intro">
-    <p class="eyebrow">Drop by or drop us a line</p>
-    <h2>We’d love to meet you.</h2>
-    <p>Want to tour the gym, ask about a membership or find the right first class? Send us a note and tell us how we can help.</p>
+    <p class="eyebrow"><?= htmlspecialchars($t['contact_eyebrow'], ENT_QUOTES, 'UTF-8') ?></p>
+    <h2><?= htmlspecialchars($t['contact_title'], ENT_QUOTES, 'UTF-8') ?></h2>
+    <p><?= htmlspecialchars($t['contact_intro'], ENT_QUOTES, 'UTF-8') ?></p>
 </section>
 
 <div class="contact-layout">
     <div class="contact-info">
         <?php if ($selected_plan): ?>
-            <article class="contact-info-card selected-package"><strong>Your selected package</strong><p><?= htmlspecialchars($selected_plan['name'], ENT_QUOTES, 'UTF-8') ?> · ETB <?= number_format((float) $selected_plan['price'], 0) ?> / <?= htmlspecialchars($selected_plan['duration'], ENT_QUOTES, 'UTF-8') ?></p></article>
+            <article class="contact-info-card selected-package"><strong><?= htmlspecialchars($t['selected_package'], ENT_QUOTES, 'UTF-8') ?></strong><p><?= htmlspecialchars($selected_plan['name'], ENT_QUOTES, 'UTF-8') ?> · ETB <?= number_format((float) $selected_plan['price'], 0) ?> / <?= htmlspecialchars($selected_plan['duration'], ENT_QUOTES, 'UTF-8') ?></p></article>
         <?php endif; ?>
-        <article class="contact-info-card"><strong>Bole Atlas</strong><p>Main branch · Atlas Road</p></article>
-        <article class="contact-info-card"><strong>Haya Hulet</strong><p>Next to Mazoria</p></article>
-        <article class="contact-info-card"><strong>Semit</strong><p>Safari Avenue</p></article>
-        <article class="contact-info-card"><strong>Bisrate Gebreal</strong><p>Old Airport Road</p></article>
-        <div class="schedule-note">Not sure which branch is right for you? Leave a message and mention your neighborhood. We’ll help you find us.</div>
+        <article class="contact-info-card"><strong>Bole Atlas</strong><p><?= htmlspecialchars($t['main_branch'], ENT_QUOTES, 'UTF-8') ?></p></article>
+        <article class="contact-info-card"><strong>Haya Hulet</strong><p><?= htmlspecialchars($t['next_to_mazoria'], ENT_QUOTES, 'UTF-8') ?></p></article>
+        <article class="contact-info-card"><strong>Semit</strong><p><?= htmlspecialchars($t['safari_avenue'], ENT_QUOTES, 'UTF-8') ?></p></article>
+        <article class="contact-info-card"><strong>Bisrate Gebreal</strong><p><?= htmlspecialchars($t['old_airport_road'], ENT_QUOTES, 'UTF-8') ?></p></article>
+        <div class="schedule-note"><?= htmlspecialchars($t['branch_help'], ENT_QUOTES, 'UTF-8') ?></div>
     </div>
 
     <div>
         <?php include 'includes/message_dialog.php'; ?>
         <form class="form-card" action="contact.php" method="POST">
-            <h3>Send us a message</h3>
-            <p class="form-intro">Your message will be recorded so the club can review your enquiry.</p>
+            <h3><?= htmlspecialchars($t['send_message'], ENT_QUOTES, 'UTF-8') ?></h3>
+            <p class="form-intro"><?= htmlspecialchars($t['contact_form_intro'], ENT_QUOTES, 'UTF-8') ?></p>
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
-            <div class="form-group"><label for="name">Your name</label><input id="name" type="text" name="name" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" autocomplete="name" maxlength="100" required></div>
-            <div class="form-group"><label for="email">Email address</label><input id="email" type="email" name="email" value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>" autocomplete="email" maxlength="100" required></div>
-            <div class="form-group"><label for="message">How can we help?</label><textarea id="message" name="message" rows="5" maxlength="2000" required><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></textarea></div>
-            <button type="submit" class="button button-full">Send message <span aria-hidden="true">↗</span></button>
+            <div class="form-group"><label for="name"><?= htmlspecialchars($t['your_name'], ENT_QUOTES, 'UTF-8') ?></label><input id="name" type="text" name="name" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" autocomplete="name" maxlength="100" required></div>
+            <div class="form-group"><label for="email"><?= htmlspecialchars($t['email_address'], ENT_QUOTES, 'UTF-8') ?></label><input id="email" type="email" name="email" value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>" autocomplete="email" maxlength="100" required></div>
+            <div class="form-group"><label for="message"><?= htmlspecialchars($t['how_help'], ENT_QUOTES, 'UTF-8') ?></label><textarea id="message" name="message" rows="5" maxlength="2000" required><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></textarea></div>
+            <button type="submit" class="button button-full"><?= htmlspecialchars($t['send_message_button'], ENT_QUOTES, 'UTF-8') ?> <span aria-hidden="true">↗</span></button>
         </form>
     </div>
 </div>

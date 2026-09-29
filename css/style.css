@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap');
 
 :root {
     --primary-color: #f97316;
@@ -245,6 +246,7 @@ body.dark-mode {
 }
 html { scroll-behavior: smooth; }
 body { background: var(--surface); color: var(--ink); font-family: 'Poppins', sans-serif; }
+html[lang="am"] body, html[lang="am"] button, html[lang="am"] input, html[lang="am"] select, html[lang="am"] textarea { font-family: 'Noto Sans Ethiopic', 'Poppins', sans-serif; }
 h1, h2, h3, h4 { line-height: 1.12; letter-spacing: -.035em; }
 h2 { margin: 0 0 14px; color: var(--ink); font-size: clamp(2rem, 4vw, 3.1rem); text-align: left; }
 p { color: var(--muted); }
@@ -258,6 +260,8 @@ p { color: var(--muted); }
 .primary-nav a:hover, .primary-nav a.active { color: var(--ink); }
 .primary-nav a.active { box-shadow: inset 0 -2px var(--accent-strong); padding: 28px 0 25px; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
+.language-toggle { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); font-size: .85rem; font-weight: 700; text-decoration: none; }
+.language-toggle:hover { border-color: var(--accent-strong); background: var(--surface); }
 .menu-toggle { display: none; }
 .icon-button { display: inline-grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 50%; background: var(--card); color: var(--ink); cursor: pointer; font-size: 1rem; }
 .header-actions .menu-toggle { display: none; }
