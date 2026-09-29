@@ -99,7 +99,7 @@ Screenshots below were captured from the running application. The dashboard exam
 
 ![Home page](screenshots/home.png)
 
-![About page student profile with student ID, department, and personal introduction](screenshots/about-student.png)
+![About me page with student ID, department, and personal introduction](screenshots/about-student.png)
 
 ![Membership plans](screenshots/memberships.png)
 

@@ -16,9 +16,9 @@ include 'includes/header.php';
 
 <section class="section student-section" aria-labelledby="student-heading">
     <div class="section-heading">
-        <p class="eyebrow">Student developer</p>
-        <h2 id="student-heading">About the student</h2>
-        <p>The student developer and motivation behind this project.</p>
+        <p class="eyebrow">About me</p>
+        <h2 id="student-heading">About me</h2>
+        <p>A little about me and why I chose this project.</p>
     </div>
     <div class="student-profile">
         <p><strong>Full name</strong><span>Besufkad Deneke</span></p>
