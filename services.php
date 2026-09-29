@@ -33,6 +33,18 @@ include 'includes/header.php';
     <div class="schedule-note">Membership plans are temporarily unavailable. Please contact the club and we’ll help you choose an option.</div>
 <?php endif; ?>
 
+<section class="section" style="padding: 50px 0 0;">
+    <div class="section-inner cta-panel">
+        <div>
+            <p class="eyebrow">Payment options</p>
+            <h2>Pay securely, then send your receipt.</h2>
+            <p>We accept Chapa, Telebirr, and CBE Birr. Contact the gym before transferring to get the current verified account name, account number, and shortcode. After you save a plan, it receives its own payment reference; include it in the transfer note if supported and send your receipt to the admin. Your membership stays pending until payment is verified.</p>
+            <p><strong>Never transfer to account details from an unverified source.</strong></p>
+        </div>
+        <a class="button" href="contact.php">Request payment details <span aria-hidden="true">↗</span></a>
+    </div>
+</section>
+
 <section class="section" style="padding: 70px 0 0;">
     <div class="section-heading">
         <p class="eyebrow">Move together</p>

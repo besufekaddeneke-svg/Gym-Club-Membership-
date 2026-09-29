@@ -38,7 +38,9 @@ CREATE TABLE IF NOT EXISTS bookings (
     total_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     payment_method VARCHAR(50) NOT NULL DEFAULT 'Chapa',
     payment_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    payment_reference CHAR(20) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_bookings_payment_reference (payment_reference),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -55,6 +57,33 @@ SET @branch_migration = IF(
 PREPARE branch_migration_stmt FROM @branch_migration;
 EXECUTE branch_migration_stmt;
 DEALLOCATE PREPARE branch_migration_stmt;
+
+-- Add unique member-visible payment references to existing bookings.
+SET @payment_reference_column_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND COLUMN_NAME = 'payment_reference'
+);
+SET @payment_reference_column_migration = IF(
+    @payment_reference_column_exists = 0,
+    'ALTER TABLE bookings ADD COLUMN payment_reference CHAR(20) NULL AFTER payment_status',
+    'SELECT 1'
+);
+PREPARE payment_reference_column_stmt FROM @payment_reference_column_migration;
+EXECUTE payment_reference_column_stmt;
+DEALLOCATE PREPARE payment_reference_column_stmt;
+
+SET @payment_reference_index_exists = (
+    SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' AND INDEX_NAME = 'uq_bookings_payment_reference'
+);
+SET @payment_reference_index_migration = IF(
+    @payment_reference_index_exists = 0,
+    'ALTER TABLE bookings ADD UNIQUE INDEX uq_bookings_payment_reference (payment_reference)',
+    'SELECT 1'
+);
+PREPARE payment_reference_index_stmt FROM @payment_reference_index_migration;
+EXECUTE payment_reference_index_stmt;
+DEALLOCATE PREPARE payment_reference_index_stmt;
 
 -- 4. Contact Messages Table
 CREATE TABLE IF NOT EXISTS messages (

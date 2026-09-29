@@ -20,12 +20,11 @@ $months_options = range(1, 12);
 $branches = ['Bole Atlas', 'Haya Hulet', 'Semit', 'Bisrate Gebreal'];
 $today = new DateTimeImmutable('today');
 $latest_booking = $today->modify('+6 months');
+$popup = null;
 $message = '';
-$message_class = 'alert-danger';
 
 if (!empty($_SESSION['dashboard_notice'])) {
-    $message = $_SESSION['dashboard_notice']['message'];
-    $message_class = $_SESSION['dashboard_notice']['class'];
+    $popup = $_SESSION['dashboard_notice'];
     unset($_SESSION['dashboard_notice']);
 }
 
@@ -42,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param('ii', $booking_id, $user_id);
             $stmt->execute();
             if ($stmt->affected_rows === 1) {
-                $_SESSION['dashboard_notice'] = ['message' => 'Your class reservation has been cancelled.', 'class' => 'alert-success'];
+                $_SESSION['dashboard_notice'] = ['type' => 'message', 'message' => 'Your membership plan has been cancelled.'];
                 $stmt->close();
                 header('Location: dashboard.php');
                 exit;
@@ -81,10 +80,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = 'You already have that plan and focus scheduled for that start date.';
             } else {
                 $payment_status = 'pending';
-                $stmt = $conn->prepare('INSERT INTO bookings (user_id, class_name, branch, booking_date, end_date, exercise_type, months_paid, total_price, payment_method, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $stmt->bind_param('isssssidss', $user_id, $plan_name, $branch, $booking_date, $end_date, $exercise_type, $months_paid, $total_price, $payment_method, $payment_status);
+                $payment_reference = 'BG-' . $today->format('ymd') . '-' . strtoupper(bin2hex(random_bytes(5)));
+                $stmt = $conn->prepare('INSERT INTO bookings (user_id, class_name, branch, booking_date, end_date, exercise_type, months_paid, total_price, payment_method, payment_status, payment_reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $stmt->bind_param('isssssidsss', $user_id, $plan_name, $branch, $booking_date, $end_date, $exercise_type, $months_paid, $total_price, $payment_method, $payment_status, $payment_reference);
                 if ($stmt->execute()) {
-                    $_SESSION['dashboard_notice'] = ['message' => 'Your plan is set! Please pay through ' . $payment_method . ' and send the receipt. The admin will verify shortly.', 'class' => 'alert-success'];
+                    $_SESSION['dashboard_notice'] = [
+                        'type' => 'payment',
+                        'reference' => $payment_reference,
+                        'method' => $payment_method,
+                        'total' => $total_price,
+                    ];
                     $stmt->close();
                     header('Location: dashboard.php');
                     exit;
@@ -96,9 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+if ($message !== '') {
+    $popup = ['type' => 'message', 'message' => $message];
+}
+
 $today_value = $today->format('Y-m-d');
 $latest_value = $latest_booking->format('Y-m-d');
-$stmt = $conn->prepare('SELECT id, class_name, branch, booking_date, end_date, exercise_type, months_paid, total_price, payment_method, payment_status, created_at FROM bookings WHERE user_id = ? AND booking_date >= CURDATE() ORDER BY booking_date ASC, created_at ASC');
+$stmt = $conn->prepare('SELECT id, class_name, branch, booking_date, end_date, exercise_type, months_paid, total_price, payment_method, payment_status, payment_reference, created_at FROM bookings WHERE user_id = ? AND booking_date >= CURDATE() ORDER BY booking_date ASC, created_at ASC');
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $bookings = $stmt->get_result();
@@ -114,8 +123,26 @@ include 'includes/header.php';
     <span class="pill"><?= $bookings->num_rows ?> upcoming <?= $bookings->num_rows === 1 ? 'plan' : 'plans' ?></span>
 </div>
 
-<?php if ($message): ?>
-    <div class="alert <?= htmlspecialchars($message_class, ENT_QUOTES, 'UTF-8') ?>" role="status"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div>
+<?php if (is_array($popup)): ?>
+    <dialog class="notice-dialog" id="noticeDialog" aria-labelledby="noticeDialogTitle" aria-describedby="noticeDialogDescription">
+        <button type="button" class="dialog-close" data-dialog-close aria-label="Close popup">×</button>
+        <div class="dialog-icon" aria-hidden="true"><?= ($popup['type'] ?? '') === 'payment' ? '✓' : 'i' ?></div>
+        <p class="eyebrow"><?= ($popup['type'] ?? '') === 'payment' ? 'Next step: payment' : 'Member update' ?></p>
+        <h2 id="noticeDialogTitle"><?= ($popup['type'] ?? '') === 'payment' ? 'Your plan is saved' : 'Membership update' ?></h2>
+        <?php if (($popup['type'] ?? '') === 'payment' && !empty($popup['reference'])): ?>
+            <p id="noticeDialogDescription" class="dialog-copy">Use this unique reference when you pay. Include it in the transfer note if supported.</p>
+            <div class="reference-panel">
+                <span>Your payment reference</span>
+                <strong id="paymentReferenceValue"><?= htmlspecialchars($popup['reference'], ENT_QUOTES, 'UTF-8') ?></strong>
+                <button type="button" class="button button-outline copy-reference" id="copyReferenceButton">Copy code</button>
+                <span id="copyReferenceStatus" class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <p class="dialog-copy"><strong><?= htmlspecialchars($popup['method'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong> · ETB <?= number_format((float) ($popup['total'] ?? 0), 0) ?>. Ask the gym admin for the verified account details and shortcode before transferring. Send the receipt to the admin; your plan remains pending until payment is confirmed.</p>
+        <?php else: ?>
+            <p id="noticeDialogDescription" class="dialog-copy"><?= htmlspecialchars($popup['message'] ?? 'Your request has been processed.', ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
+        <button type="button" class="button dialog-done" data-dialog-close>Continue</button>
+    </dialog>
 <?php endif; ?>
 
 <div class="dashboard-grid">
@@ -153,6 +180,10 @@ include 'includes/header.php';
                     <?php endforeach; ?>
                 </select>
                 <p class="form-hint">Pay with your chosen method, then send the receipt. The admin will verify it shortly.</p>
+                <div class="payment-details" style="margin-top: 14px; padding: 14px 16px; border: 1px solid #d9d9d9; border-radius: 12px; background: #f7f7f7;">
+                    <p style="margin: 0 0 10px; font-weight: 700;">How to pay</p>
+                    <p style="margin: 0; color: #444;">Ask the gym admin for the current verified account name, account number, and shortcode for your selected payment method before transferring. Each saved plan gets its own payment reference; include it in the transfer note if supported, and send the receipt to the admin. Your membership remains pending until payment is confirmed.</p>
+                </div>
             </div>
             <div class="form-group">
                 <label for="months_paid">How many months?</label>
@@ -194,6 +225,9 @@ include 'includes/header.php';
                             <p><?= htmlspecialchars($booking['branch'], ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars($booking['exercise_type'] ?? 'General Fitness', ENT_QUOTES, 'UTF-8') ?></p>
                             <p><?= (int) ($booking['months_paid'] ?? 1) ?> month(s) · ETB <?= number_format((float) ($booking['total_price'] ?? 0), 0) ?></p>
                             <p>Payment: <?= htmlspecialchars($booking['payment_method'] ?? 'Chapa', ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars(strtoupper($booking['payment_status'] ?? 'PENDING'), ENT_QUOTES, 'UTF-8') ?></p>
+                            <?php if (!empty($booking['payment_reference'])): ?>
+                                <p><strong>Payment reference:</strong> <?= htmlspecialchars($booking['payment_reference'], ENT_QUOTES, 'UTF-8') ?></p>
+                            <?php endif; ?>
                         </div>
                         <form action="dashboard.php" method="POST" onsubmit="return confirm('Cancel this plan?');">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">

@@ -38,6 +38,42 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const noticeDialog = document.getElementById("noticeDialog");
+    if (noticeDialog) {
+        if (typeof noticeDialog.showModal === "function") {
+            noticeDialog.showModal();
+        } else {
+            noticeDialog.setAttribute("open", "");
+        }
+
+        noticeDialog.querySelectorAll("[data-dialog-close]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                if (typeof noticeDialog.close === "function") noticeDialog.close();
+                else noticeDialog.removeAttribute("open");
+            });
+        });
+
+        noticeDialog.addEventListener("click", function (event) {
+            if (event.target === noticeDialog && typeof noticeDialog.close === "function") {
+                noticeDialog.close();
+            }
+        });
+
+        const copyReferenceButton = document.getElementById("copyReferenceButton");
+        const paymentReferenceValue = document.getElementById("paymentReferenceValue");
+        const copyReferenceStatus = document.getElementById("copyReferenceStatus");
+        if (copyReferenceButton && paymentReferenceValue && copyReferenceStatus) {
+            copyReferenceButton.addEventListener("click", async function () {
+                try {
+                    await navigator.clipboard.writeText(paymentReferenceValue.textContent.trim());
+                    copyReferenceStatus.textContent = "Payment reference copied.";
+                } catch (error) {
+                    copyReferenceStatus.textContent = "Copy unavailable. Select and copy the code above.";
+                }
+            });
+        }
+    }
+
     const regForm = document.getElementById("registerForm");
     if (regForm) {
         const passwordInput = document.getElementById("password");
